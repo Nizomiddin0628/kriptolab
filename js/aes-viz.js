@@ -165,7 +165,6 @@
     $('#aesBlockLbl').textContent = `${s.block + 1}-blok / ${res.blocks.length}`;
     $$('#aesScrub button').forEach((b, i) => { b.classList.toggle('cur', i === s.step); b.classList.toggle('on', i <= s.step); });
     renderDetail(st, focus);
-    highlightRoundKey(st);
     lastRendered = s.step;
   }
 
@@ -241,8 +240,7 @@
         sb += '</div>';
         html = `<h4>SubBytes: S-box jadvalidan almashtirish</h4>
           <p class="small">Bayt 0x${h2(v)}: yuqori 4 bit = <b>${hi.toString(16)}</b> (qator), quyi 4 bit = <b>${lo.toString(16)}</b> (ustun).</p>
-          <div class="calc">S-box[${hi.toString(16)}][${lo.toString(16)}] = <b>${h2(st.after[i])}</b></div>${sb}
-          <p class="xs muted" style="margin-top:8px">S-box — GF(2⁸) maydonida teskari element + affin almashtirish. U shifrga chiziqsizlik beradi.</p>`;
+          <div class="calc">S-box[${hi.toString(16)}][${lo.toString(16)}] = <b>${h2(st.after[i])}</b></div>${sb}`;
         break;
       }
       case 'shiftRows': {
@@ -254,16 +252,11 @@
         break;
       }
       case 'mixColumns': {
-        const det = K.AES.mixDetail(st.before, r, c);
-        const M = K.AES.MIX;
-        const mat = M.map((row, ri) => `[${row.map((x) => '0' + x).join(' ')}]${ri === r ? ' ←' : ''}`).join('<br>');
-        html = `<h4>MixColumns: ${c}-ustunni matritsaga ko‘paytirish</h4>
-          <p class="small">Ustun GF(2⁸) da quyidagi matritsaga ko‘paytiriladi (qo‘shish = XOR, 02· = chapga surish va kerak bo‘lsa ⊕1b).</p>
-          <div class="calc">${mat}</div>
-          <div class="calc">${pos} = ${det.terms.map((t) => `0${t.m}·${h2(t.b)}`).join(' ⊕ ')}<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= ${det.terms.map((t) => h2(t.prod)).join(' ⊕ ')}<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <b>${h2(det.value)}</b></div>
-          <p class="small muted">Bitta kirish baytining o‘zgarishi ustunning to‘rttala baytiga ta’sir qiladi.</p>`;
+        const col = (arr) => [0, 1, 2, 3].map((k) => h2(arr[k + 4 * c])).join(' ');
+        html = `<h4>MixColumns: ${c}-ustunni aralashtirish</h4>
+          <p class="small">Har bir ustundagi 4 bayt maxsus qoida bo‘yicha o‘zaro aralashtiriladi. Natijada ustunning har bir yangi bayti eski 4 baytning hammasiga bog‘liq bo‘ladi.</p>
+          <div class="calc">${c}-ustun oldin: ${col(st.before)}<br>${c}-ustun keyin: <b>${col(st.after)}</b></div>
+          <p class="small muted">Bitta bayt o‘zgarsa, butun ustun o‘zgaradi — shu tufayli o‘zgarish shifr bo‘ylab tez tarqaladi.</p>`;
         break;
       }
       case 'output': {
@@ -295,61 +288,12 @@
     onState: (p) => { $('#aesPlay').textContent = p ? '❚❚ Pauza' : '▶ Ijro'; },
   });
 
-  /* ---------- 4. Raund kalitlari ---------- */
-  function renderRoundKeys() {
-    const ks = res.ks;
-    let h = '<thead><tr><th>Raund</th><th>Raund kaliti K<sub>r</sub> (16 bayt)</th></tr></thead><tbody>';
-    ks.roundKeys.forEach((rk, r) => { h += `<tr data-r="${r}"><td>K${r}${r === 0 ? ' (asosiy kalitdan)' : ''}</td><td class="mono">${K.toHex(rk)}</td></tr>`; });
-    $('#aesRk').innerHTML = h + '</tbody>';
-    const t = ks.wtrace[ks.Nk];
-    $('#aesW0').innerHTML = `<div class="calc" style="white-space:normal;line-height:1.9">
-      w[${t.i - 1}] = ${t.prev}<br>RotWord → ${t.rot}<br>SubWord → ${t.sub}<br>⊕ Rcon (${t.rcon}000000) → ${t.afterRcon}<br>
-      ⊕ w[${t.i - ks.Nk}] (${t.back}) → <b>w[${t.i}] = ${t.result}</b></div>
-      <p class="small muted">Qolgan so‘zlar oddiyroq: w[i] = w[i−1] ⊕ w[i−${ks.Nk}]${ks.Nk === 8 ? ' (AES-256 da har 4-so‘zda yana SubWord qo‘llanadi)' : ''}.</p>`;
-  }
-  function highlightRoundKey(st) {
-    $$('#aesRk tr[data-r]').forEach((tr) => tr.classList.toggle('cur', st.op === 'addRoundKey' && +tr.dataset.r === st.round));
-  }
-
-  /* ---------- 5. ECB rasm ---------- */
-  function drawLock() {
-    const cv = $('#ecbOrig'), ctx = cv.getContext('2d');
-    ctx.save(); ctx.scale(2, 2);
-    ctx.fillStyle = 'rgb(224,224,224)'; ctx.fillRect(0, 0, 64, 64);
-    ctx.strokeStyle = 'rgb(40,40,40)'; ctx.lineWidth = 7;
-    ctx.beginPath(); ctx.arc(32, 26, 12, Math.PI, 0); ctx.lineTo(44, 32); ctx.moveTo(20, 26); ctx.lineTo(20, 32); ctx.stroke();
-    ctx.fillStyle = 'rgb(40,40,40)'; ctx.fillRect(12, 30, 40, 28);
-    ctx.fillStyle = 'rgb(224,224,224)'; ctx.fillRect(29, 38, 6, 12);
-    ctx.restore();
-    const img = ctx.getImageData(0, 0, 128, 128);
-    // kulrang + kvantlash (bir xil bloklar ko‘payishi uchun)
-    const g = new Uint8Array(128 * 128);
-    for (let i = 0; i < g.length; i++) g[i] = img.data[i * 4] > 130 ? 224 : 40;
-    // asl rasmni ham kvantlangan holda qayta chizamiz
-    for (let i = 0; i < g.length; i++) { img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = g[i]; img.data[i * 4 + 3] = 255; }
-    ctx.putImageData(img, 0, 0);
-    return g;
-  }
-  function paint(id, bytes) {
-    const cv = $(id), ctx = cv.getContext('2d');
-    const img = ctx.createImageData(128, 128);
-    for (let i = 0; i < bytes.length; i++) { img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = bytes[i]; img.data[i * 4 + 3] = 255; }
-    ctx.putImageData(img, 0, 0);
-  }
-  function ecbDemo() {
-    const g = drawLock();
-    const key = K.randBytes(16), iv = K.randBytes(16);
-    paint('#ecbEcb', K.AES.ecbEncryptRaw(g, key));
-    paint('#ecbCbc', K.AES.cbcEncryptRaw(g, key, iv));
-  }
-
   /* ---------- umumiy ---------- */
   function fullRender() {
     if (!compute()) { $('#aesChain').innerHTML = ''; return; }
     renderPadding();
     renderChain();
     renderScrubber();
-    renderRoundKeys();
     renderStep(false);
     verifyWebCrypto();
   }
@@ -362,7 +306,6 @@
     $$('#aesKeySize button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.v === s.keySize)));
   }
 
-  let ecbDone = false;
   function init() {
     ensureKey();
     syncInputs();
@@ -383,7 +326,6 @@
     $('#aesFirst').addEventListener('click', () => { player.pause(); go(0, false); });
     $('#aesLast').addEventListener('click', () => { player.pause(); go(steps.length - 1, false); });
     $('#aesSpeed').addEventListener('input', (e) => { speed = +e.target.value; document.documentElement.style.setProperty('--speed', speed); });
-    $('#ecbRedo').addEventListener('click', ecbDemo);
     fullRender();
   }
 
@@ -401,7 +343,6 @@
 
   window.AESViz = {
     init, load,
-    onShow() { if (!ecbDone) { ecbDemo(); ecbDone = true; } },
     onHide() { player.pause(); },
     stepIndex(op, round) { return steps.findIndex((s) => s.op === op && (round == null || s.round === round)); },
     go(i) { go(i, true); },

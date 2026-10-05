@@ -40,24 +40,21 @@
         { id: 'a3', q: 'AES-CBC shifr matni necha bayt bo‘ladi va hex ko‘rinishda necha belgi?', fields: [{ id: 'b', label: 'bayt', type: 'int', expect: P.ctLen }, { id: 'h', label: 'hex belgi', type: 'int', expect: P.ctLen * 2 }],
           hint: 'Shifr matn = to‘ldirilgan matn uzunligi. 1 bayt = 2 ta hex belgi.',
           sol: `${P.L} + ${P.pad} = <b>${P.ctLen} bayt</b> (${P.ctLen / 16} blok), hex’da ${P.ctLen} · 2 = <b>${P.ctLen * 2} belgi</b>.`, anim: 'aesChain' },
-        { id: 'a4', q: `Birinchi harf “${P.ch}” ning ASCII kodi (hex) va uning S-box’dagi qiymati (SubBytes natijasi) qanday?`, fields: [{ id: 'asc', label: 'ASCII (hex)', type: 'hex', expect: P.M }, { id: 'sb', label: 'S-box (hex)', type: 'hex', expect: P.sb }],
-          hint: 'Kodning yuqori 4 biti (birinchi hex raqam) — S-box qatori, quyi 4 biti (ikkinchi hex raqam) — ustun. Jadval quyida.',
-          sol: `“${P.ch}” = ${P.M} = <b>0x${hx(P.M)}</b>. Qator ${(P.M >> 4).toString(16)}, ustun ${(P.M & 15).toString(16)} → S-box[${(P.M >> 4).toString(16)}][${(P.M & 15).toString(16)}] = <b>0x${hx(P.sb)}</b>.`, anim: 'aesSub' },
       ],
       rsa: [
         { id: 'r1', q: `n = p · q = ?`, fields: [{ id: 'n', label: 'n', type: 'int', expect: P.n }], hint: 'Oddiy ko‘paytma.', sol: `n = ${P.p} · ${P.q} = <b>${P.n}</b>.`, anim: 'rsa1' },
         { id: 'r2', q: 'φ(n) = (p − 1)(q − 1) = ?', fields: [{ id: 'phi', label: 'φ(n)', type: 'int', expect: P.phi }], hint: 'Ikkala tub sondan 1 ni ayirib ko‘paytiring.', sol: `φ(n) = ${P.p - 1} · ${P.q - 1} = <b>${P.phi}</b>.`, anim: 'rsa2' },
-        { id: 'r3', q: `Yopiq ko‘rsatkich d: ${P.e} · d ≡ 1 (mod ${P.phi}). d = ?`, fields: [{ id: 'd', label: 'd', type: 'int', expect: P.d }],
-          hint: `Kengaytirilgan Evklid algoritmi: ${P.phi} va ${P.e} uchun qoldiqlar va t koeffitsiyentlar jadvalini tuzing. Tekshiruv: ${P.e} · d mod ${P.phi} = 1 bo‘lishi kerak.`,
-          sol: `Kengaytirilgan Evklid algoritmi d = <b>${P.d}</b> ni beradi. Tekshiruv: ${P.e} · ${P.d} = ${P.e * P.d} = ${Math.floor((P.e * P.d) / P.phi)} · ${P.phi} + 1 ✓`, anim: 'rsa4' },
+        { id: 'r3', q: `Yopiq ko‘rsatkich d = ${P.d}. Shartni tekshiring: e · d = ? va (e · d) mod φ(n) = ?`, fields: [{ id: 'ed', label: 'e · d', type: 'int', expect: P.e * P.d }, { id: 'rem', label: 'qoldiq', type: 'int', expect: 1 }],
+          hint: `e · d = ${P.e} · ${P.d}. Keyin natijani ${P.phi} ga bo‘lib, qoldig‘ini toping. To‘g‘ri d uchun qoldiq doim 1.`,
+          sol: `${P.e} · ${P.d} = <b>${P.e * P.d}</b> = ${Math.floor((P.e * P.d) / P.phi)} · ${P.phi} + <b>1</b>. Qoldiq 1 — demak e·d ≡ 1 (mod φ(n)) sharti bajarildi.`, anim: 'rsa4' },
         { id: 'r4', q: `Birinchi harf “${P.ch}” (M = ${P.M}) ni shifrlang: C = M^${P.e} mod ${P.n} = ?`, fields: [{ id: 'c', label: 'C', type: 'int', expect: P.C }],
-          hint: `Darajani bosqichma-bosqich hisoblang va har qadamda mod ${P.n} oling: M², M⁴ … yoki ${P.e} ni ikkilik ko‘rinishda yozib kvadrat-ko‘paytirish usulini qo‘llang.`,
+          hint: `Python’da: pow(${P.M}, ${P.e}, ${P.n}). Kalkulyatorda: har ko‘paytirishdan keyin ${P.n} ga bo‘lib, qoldiqni olib boring.`,
           sol: `${P.M}^${P.e} mod ${P.n} = <b>${P.C}</b>. Tekshiruv (ochish): ${P.C}^${P.d} mod ${P.n} = ${K.RSA.modPow(P.C, P.d, P.n)} = M ✓`, anim: 'rsa5' },
       ],
       sha: [
-        { id: 'h1', q: `“${P.word}” uchun xabar uzunligi L (bitda) = ?`, fields: [{ id: 'L', label: 'bit', type: 'int', expect: P.Lbits }], hint: '1 bayt = 8 bit.', sol: `L = ${P.L} · 8 = <b>${P.Lbits} bit</b>.`, anim: 'shaPad' },
-        { id: 'h2', q: 'Nechta nol bit (k) qo‘shiladi? Shart: L + 1 + k ≡ 448 (mod 512)', fields: [{ id: 'k', label: 'k', type: 'int', expect: P.k }], hint: 'Avval “1” biti qo‘shiladi, keyin 448 gacha nollar, oxirida 64 bitli uzunlik.', sol: `${P.Lbits} + 1 + k = 448 → k = 448 − ${P.Lbits + 1} = <b>${P.k}</b>.`, anim: 'shaPad' },
-        { id: 'h3', q: 'To‘ldirilgan xabar nechta 512 bitli blokdan iborat?', fields: [{ id: 'bl', label: 'blok', type: 'int', expect: P.blocks }], hint: 'L + 1 + k + 64 ni 512 ga bo‘ling.', sol: `${P.Lbits} + 1 + ${P.k} + 64 = ${P.Lbits + 1 + P.k + 64} bit = <b>${P.blocks} blok</b>.`, anim: 'shaPad' },
+        { id: 'h1', q: `“${P.word}” ning SHA-256 xeshi necha bit va necha hex belgidan iborat bo‘ladi?`, fields: [{ id: 'bits', label: 'bit', type: 'int', expect: 256 }, { id: 'hex', label: 'hex belgi', type: 'int', expect: 64 }],
+          hint: 'SHA-256 nomidagi son natija uzunligini bildiradi. 1 hex belgi = 4 bit.',
+          sol: `Kirish uzunligidan qat’i nazar natija doim <b>256 bit</b>, hex’da 256 / 4 = <b>64 belgi</b>. “${P.word}” ${P.L} bayt bo‘lsa ham, natija baribir 256 bit.`, anim: 'shaHash' },
       ],
     };
   }
@@ -100,8 +97,8 @@
         });
         break;
       }
-      case 'shaPad':
-        App.go('sha', () => { SHAViz.load({ text: P.word, block: 0, round: 0 }); App.focusEl('#shaPadGrid'); });
+      case 'shaHash':
+        App.go('sha', () => { SHAViz.load({ text: P.word }); App.focusEl('#shaOut'); });
         break;
       case 'shaAv': {
         const t3 = R.t3;
@@ -158,18 +155,6 @@
     if (!r) { el.className = 'fb'; el.innerHTML = ''; return; }
     el.className = 'fb show ' + r[0];
     el.innerHTML = r[1];
-  }
-
-  function sboxTable() {
-    let h = '<div class="table-wrap" style="margin-top:8px"><table style="font-size:.72rem"><thead><tr><th></th>';
-    for (let x = 0; x < 16; x++) h += `<th class="mono">${x.toString(16)}</th>`;
-    h += '</tr></thead><tbody>';
-    for (let y = 0; y < 16; y++) {
-      h += `<tr><th class="mono">${y.toString(16)}</th>`;
-      for (let x = 0; x < 16; x++) h += `<td class="mono" style="padding:3px 4px">${hx(K.AES.SBOX[y * 16 + x])}</td>`;
-      h += '</tr>';
-    }
-    return h + '</tbody></table></div>';
   }
 
   function pyCode(P) {
@@ -269,9 +254,8 @@ print("Farqlanuvchi bitlar soni (lavina effekti):", diff_bits, "/", len(h1) * 4)
 
     <article class="task aes">${taskHeader(1, 'aes', 'AES-256 bilan shifrlash va deshifrlash (CBC, PKCS7)', isDone(1))}
       <div class="body">
-        <h4>A. Qo‘lda hisoblang</h4>
+        <h4>A. Hisoblang</h4>
         ${Q.aes.map((q, i) => qHTML(q, i + 1)).join('')}
-        <details class="code"><summary>S-box jadvali (4-savol uchun)</summary>${sboxTable()}</details>
         <h4 style="margin-top:20px">B. Dasturiy bajaring</h4>
         <p class="small muted">Kalit (32 bayt) va IV (16 bayt) tasodifiy yaratiladi, so‘z shifrlanib, qayta ochiladi.</p>
         <div class="row"><button class="btn aes" id="t1Run">Kalit va IV yaratib, shifrlash</button>${R.t1 ? '<button class="btn ghost" id="t1Anim">▶ Shu natijani animatsiyada ko‘rish</button>' : ''}</div>
@@ -281,7 +265,7 @@ print("Farqlanuvchi bitlar soni (lavina effekti):", diff_bits, "/", len(h1) * 4)
 
     <article class="task rsa">${taskHeader(2, 'rsa', 'RSA: kalit juftligi, shifrlash, raqamli imzo', isDone(2))}
       <div class="body">
-        <h4>A. Mini-RSA ni qo‘lda hisoblang (p = ${P.p}, q = ${P.q}, e = ${P.e})</h4>
+        <h4>A. Mini-RSA ni hisoblang (p = ${P.p}, q = ${P.q}, e = ${P.e})</h4>
         ${Q.rsa.map((q, i) => qHTML(q, i + 1)).join('')}
         <h4 style="margin-top:20px">B. Haqiqiy RSA-2048 (OAEP + PSS)</h4>
         <div class="row"><button class="btn rsa" id="t2Run">Kalit yaratish, shifrlash, imzolash</button></div>
@@ -291,7 +275,7 @@ print("Farqlanuvchi bitlar soni (lavina effekti):", diff_bits, "/", len(h1) * 4)
 
     <article class="task sha">${taskHeader(3, 'sha', 'SHA-256 va lavina effekti', isDone(3))}
       <div class="body">
-        <h4>A. To‘ldirishni qo‘lda hisoblang</h4>
+        <h4>A. Hisoblang</h4>
         ${Q.sha.map((q, i) => qHTML(q, i + 1)).join('')}
         <h4 style="margin-top:20px">B. Bitta harfni o‘zgartirib, xeshlarni solishtiring</h4>
         <div class="grid-2"><label class="field">Asl so‘z<input type="text" value="${esc(P.word)}" disabled></label>
@@ -430,7 +414,7 @@ print("Farqlanuvchi bitlar soni (lavina effekti):", diff_bits, "/", len(h1) * 4)
       sol: `${r.h1[0]} = ${b4(parseInt(r.h1[0], 16))}, ${r.h2[0]} = ${b4(parseInt(r.h2[0], 16))} → XOR = ${b4(x)} → <b>${K.popcount(x)} bit</b>. Butun xesh bo‘yicha shunday hisoblansa: ${r.diff} / 256 bit (${(r.diff / 2.56).toFixed(1)}%) — lavina effekti.`, anim: 'shaAv' };
   }
   function h4HTML(r) {
-    return qHTML(Object.assign(h4Def(), { q: `Ikkala xeshning birinchi hex belgilari: “${r.h1[0]}” va “${r.h2[0]}”. Ularni XOR qilsak, nechta bit farq qiladi?` }), 4);
+    return qHTML(Object.assign(h4Def(), { q: `Ikkala xeshning birinchi hex belgilari: “${r.h1[0]}” va “${r.h2[0]}”. Ularni XOR qilsak, nechta bit farq qiladi? (Python kodidagi bin(int(a,16) ^ int(b,16)).count("1") aynan shuni har bir belgi uchun hisoblaydi.)` }), 2);
   }
   function bindH4() {
     const el = $('#t3Q');
@@ -473,9 +457,9 @@ print("Farqlanuvchi bitlar soni (lavina effekti):", diff_bits, "/", len(h1) * 4)
   function isDone(n) {
     const s = S();
     if (!s.variant) return false;
-    if (n === 1) return !!s.results.t1 && ['a1', 'a2', 'a3', 'a4'].every(qResolved);
+    if (n === 1) return !!s.results.t1 && ['a1', 'a2', 'a3'].every(qResolved);
     if (n === 2) return !!s.results.t2 && ['r1', 'r2', 'r3', 'r4'].every(qResolved);
-    if (n === 3) return !!s.results.t3 && ['h1', 'h2', 'h3', 'h4'].every(qResolved);
+    if (n === 3) return !!s.results.t3 && ['h1', 'h4'].every(qResolved);
     if (n === 4) return s.analysisChecked && t4Ok();
     return false;
   }
@@ -524,7 +508,7 @@ print("Farqlanuvchi bitlar soni (lavina effekti):", diff_bits, "/", len(h1) * 4)
     qBlock(Q.sha);
     if (R.t3) {
       const h4 = Object.assign(h4Def(), { q: `Birinchi hex belgilar XOR (${R.t3.h1[0]} ⊕ ${R.t3.h2[0]}) — nechta bit farq?` });
-      qBlock([h4], 4);
+      qBlock([h4], 2);
       out.push('', 'Dastur natijasi:', `Matn 1      : ${R.t3.w1}`, `SHA-256(M1) : ${R.t3.h1}`, `Matn 2      : ${R.t3.w2}`, `SHA-256(M2) : ${R.t3.h2}`, `Farqlanuvchi bitlar soni (lavina effekti): ${R.t3.diff} / 256`);
     } else out.push('', 'Dastur natijasi:', '  (bajarilmagan)');
     out.push('', line, '4-TOPSHIRIQ. Tahlil', line, (s.analysis || '(yozilmagan)').trim());

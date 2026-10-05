@@ -108,15 +108,6 @@
     return out;
   }
 
-  function powTable(t, base, exp, mod, title) {
-    let h = `<div class="small" style="margin:8px 0 6px">${title}: ${exp} = <span class="mono">${t.bits}</span><sub>2</sub>. Har bitda: kvadratga oshiramiz, bit 1 bo‘lsa yana ${base} ga ko‘paytiramiz (mod ${mod}).</div>`;
-    h += '<div class="table-wrap"><table><thead><tr><th>Bit</th><th>r² mod n</th><th>× asos (bit = 1)</th><th>r</th></tr></thead><tbody>';
-    t.steps.forEach((st, i) => {
-      h += `<tr class="appear" style="animation-delay:${(i * 90) / speed}ms"><td class="mono">${st.bit}</td><td class="mono">${st.from}² mod ${mod} = ${st.squared}</td><td class="mono">${st.bit === '1' ? `${st.squared}·${base} mod ${mod} = ${st.result}` : '—'}</td><td class="mono"><b>${st.result}</b></td></tr>`;
-    });
-    return h + '</tbody></table></div>';
-  }
-
   function renderMini(animate) {
     const box = $('#rsaSteps');
     calc = computeMini();
@@ -128,7 +119,6 @@
     if (selLetter >= c.letters.length) selLetter = 0;
     const L = c.letters[selLetter] || null;
     const card = (i, body) => `<div class="stepcard${i <= cur ? ' on' : ''}${i === cur ? ' cur' : ''}" data-i="${i}"><h4>${STEP_TITLES[i]}</h4>${i <= cur ? body : '<p class="small muted">Keyingi qadamda ochiladi.</p>'}</div>`;
-    const egRows = c.eg.rows.map((r, i) => `<tr class="${animate && cur === 4 ? 'appear' : ''}" style="animation-delay:${(i * 160) / speed}ms"><td class="mono">${r.q == null ? '—' : r.q}</td><td class="mono">${r.r}</td><td class="mono">${r.t}</td></tr>`).join('');
     const tiles = (mode) => c.letters.map((l, i) => `<button class="letter${i === selLetter ? ' active' : ''}" data-l="${i}" style="cursor:pointer;font:inherit">
         <span class="ch">${esc(chars[i] === ' ' ? '␣' : chars[i])}</span><span class="m">M = ${l.m}</span><span class="ar">↓</span>
         <span class="c">C = ${l.c}</span>${mode === 'dec' ? `<span class="ar">↓</span><span class="back">${l.back}</span>` : ''}</button>`).join('');
@@ -138,20 +128,19 @@
     html += card(0, `<div class="eq">p = <span class="v">${c.p}</span> ✓ tub, q = <span class="v">${c.q}</span> ✓ tub</div><p class="small muted">Haqiqiy RSA-2048 da har biri ~1024 bitli (≈309 xonali) tasodifiy tub son.</p>`);
     html += card(1, `<div class="eq">n = p · q = ${c.p} · ${c.q} = <span class="v">${c.n}</span></div><p class="small muted">n ${bits} bitli. U ochiq kalitning bir qismi — hamma biladi.</p>`);
     html += card(2, `<div class="eq">φ(n) = (p − 1)(q − 1) = ${c.p - 1} · ${c.q - 1} = <span class="v">${c.phi}</span></div><p class="small muted">φ(n) ni faqat p va q ni biladigan odam hisoblay oladi — bu yopiq kalitning siri.</p>`);
-    html += card(3, `<div class="eq">gcd(e, φ) = gcd(${c.e}, ${c.phi}) = <span class="v">1</span> ✓</div><p class="small">Ochiq kalit: <b class="mono">(e, n) = (${c.e}, ${c.n})</b>. Boshqa mos e: ${validE(c.phi, 5).join(', ')}… Amalda e = 65537.</p>`);
-    html += card(4, `<p class="small">e · d ≡ 1 (mod φ) tenglamasini kengaytirilgan Evklid bilan yechamiz. Har qatorda: r<sub>yangi</sub> = r<sub>i−1</sub> − q·r<sub>i</sub>, t<sub>yangi</sub> = t<sub>i−1</sub> − q·t<sub>i</sub>.</p>
-      <div class="table-wrap"><table><thead><tr><th>q (bo‘linma)</th><th>r (qoldiq)</th><th>t</th></tr></thead><tbody>${egRows}</tbody></table></div>
-      <div class="eq" style="margin-top:8px">r = 1 bo‘lgan qatordagi t → d = t mod φ = <span class="v">${c.d}</span></div>
-      <div class="eq">Tekshiruv: ${c.e} · ${c.d} mod ${c.phi} = <span class="v">${(BigInt(c.e) * c.d) % BigInt(c.phi)}</span> ✓</div>
-      <p class="small">Yopiq kalit: <b class="mono">(d, n) = (${c.d}, ${c.n})</b></p>`);
-    html += card(5, `<p class="small">Har bir bayt M alohida shifrlanadi: <span class="formula">C = M<sup>${c.e}</sup> mod ${c.n}</span>. Harfni bosing — hisobini ko‘rasiz.</p>
-      <div class="letters">${tiles('enc')}</div>${L ? powTable(L.encT, L.m, c.e, c.n, `'${esc(chars[selLetter])}': ${L.m}<sup>${c.e}</sup> mod ${c.n}`) : ''}`);
+    html += card(3, `<div class="eq">e = <span class="v">${c.e}</span> va φ(n) = ${c.phi} o‘zaro tub ✓</div><p class="small">O‘zaro tub — ularning umumiy bo‘luvchisi faqat 1. Ochiq kalit: <b class="mono">(e, n) = (${c.e}, ${c.n})</b>. Amalda e = 65537 olinadi.</p>`);
+    { const ed = BigInt(c.e) * c.d, qq = ed / BigInt(c.phi);
+    html += card(4, `<p class="small">d shunday son bo‘lishi kerakki, e·d ni φ(n) ga bo‘lganda qoldiq 1 chiqsin: <span class="formula">e·d ≡ 1 (mod φ(n))</span>.</p>
+      <div class="eq">d = <span class="v">${c.d}</span></div>
+      <div class="eq">Tekshiruv: ${c.e} · ${c.d} = ${ed} = ${qq} · ${c.phi} + <span class="v">1</span> ✓</div>
+      <p class="small">Yopiq kalit: <b class="mono">(d, n) = (${c.d}, ${c.n})</b>. Python’da: <span class="formula">d = pow(e, -1, phi)</span></p>`); }
+    html += card(5, `<p class="small">Har bir harf kodi M alohida shifrlanadi: <span class="formula">C = M<sup>${c.e}</sup> mod ${c.n}</span>. Harfni bosing.</p>
+      <div class="letters">${tiles('enc')}</div>${L ? `<div class="eq" style="margin-top:10px">'${esc(chars[selLetter])}': C = ${L.m}<sup>${c.e}</sup> mod ${c.n} = <span class="v">${L.c}</span></div>` : ''}`);
     html += card(6, `<p class="small">Faqat d ni biladigan Aziza ochadi: <span class="formula">M = C<sup>${c.d}</sup> mod ${c.n}</span>.</p>
-      <div class="letters">${tiles('dec')}</div>${L ? powTable(L.decT, L.c, c.d, c.n, `${L.c}<sup>${c.d}</sup> mod ${c.n}`) : ''}
+      <div class="letters">${tiles('dec')}</div>${L ? `<div class="eq" style="margin-top:10px">M = ${L.c}<sup>${c.d}</sup> mod ${c.n} = <span class="v">${L.back}</span> = '${esc(chars[selLetter])}'</div>` : ''}
       <div class="eq" style="margin-top:8px">Natija: <span class="v">${esc(K.dec.decode(Uint8Array.from(c.letters.map((l) => Number(l.back)))))}</span> ✓</div>`);
-    html += card(7, `<p>Hujumchi n = ${c.n} ni biladi. p ni topish uchun ${trial + 1} ta bo‘lishni sinab ko‘rdi — kichik n bir zumda faktorlanadi.</p>
-      <p class="small">Haqiqiy RSA-2048 da n 617 xonali. Klassik kompyuterlarda faktorlangan eng katta RSA soni — <b>RSA-250 (829 bit, 2020-yil)</b>, buning uchun ~2700 protsessor-yil ketgan. 2048 bit esa undan ancha uzoqda. Kvant kompyuterdagi Shor algoritmi esa buni buzishi mumkin — shuning uchun postkvant algoritmlarga o‘tilmoqda.</p>
-      <p class="small muted">Sof (to‘ldirishsiz) RSA’ni bunday harfma-harf ishlatish xavfli: bir xil harf doim bir xil C beradi. Amalda OAEP qo‘llanadi.</p>`);
+    html += card(7, `<p>Hujumchi n = ${c.n} ni biladi. Kichik n ni p va q ga ajratish oson (${trial + 1} ta bo‘lish yetdi), shundan keyin d ni ham topadi.</p>
+      <p class="small">Haqiqiy RSA-2048 da n 617 xonali son — uni p va q ga ajratish amalda imkonsiz. RSA xavfsizligi aynan shunga asoslangan.</p>`);
     box.innerHTML = html;
     $$('.letter', box).forEach((b) => b.addEventListener('click', () => { selLetter = +b.dataset.l; renderMini(false); }));
     $('#rsaStepLbl').innerHTML = `${cur + 1}. ${STEP_TITLES[cur]} <span class="xs muted">(${cur + 1} / 8)</span>`;
@@ -171,24 +160,6 @@
     interval: () => 2600 / speed,
     onState: (p) => { $('#rsaPlay').textContent = p ? '❚❚ Pauza' : '▶ Ijro'; },
   });
-
-  /* =================== mini-imzo =================== */
-  function renderSig() {
-    const c = calc;
-    if (!c || c.err) { $('#sigSend').innerHTML = '<p class="small muted">Avval mini-RSA kalitlarini to‘g‘ri kiriting.</p>'; $('#sigCheck').innerHTML = ''; return; }
-    const s = S();
-    const n = BigInt(c.n);
-    const hs = K.SHA.sha256Hex(s.sigMsg);
-    const h = BigInt('0x' + hs) % n;
-    const sig = K.RSA.modPow(h, c.d, n);
-    const hr = BigInt('0x' + K.SHA.sha256Hex(s.sigRecv)) % n;
-    const v = K.RSA.modPow(sig, c.e, n);
-    const ok = v === hr;
-    $('#sigSend').innerHTML = `<div class="calc" style="white-space:normal;word-break:break-all">SHA-256 = ${hs.slice(0, 24)}…<br>h = SHA-256 mod n = <b>${h}</b><br>s = h<sup>d</sup> mod n = ${h}<sup>${c.d}</sup> mod ${c.n} = <b>${sig}</b></div>`;
-    $('#sigCheck').innerHTML = `<div class="calc" style="white-space:normal">h' = SHA-256(qabul qilingan) mod n = <b>${hr}</b><br>s<sup>e</sup> mod n = ${sig}<sup>${c.e}</sup> mod ${c.n} = <b>${v}</b></div>
-      <span class="badge ${ok ? 'ok' : 'bad'}" style="font-size:.9rem">${ok ? 'Imzo to‘g‘ri: xabar o‘zgarmagan' : 'Imzo noto‘g‘ri: xabar o‘zgartirilgan!'}</span>
-      ${ok && s.sigMsg !== s.sigRecv ? '<p class="xs muted" style="margin-top:6px">Kichik n da tasodifiy moslik bo‘lishi mumkin; RSA-2048 da bu amalda imkonsiz.</p>' : ''}`;
-  }
 
   /* =================== haqiqiy RSA-2048 =================== */
   const Real = {
@@ -282,14 +253,12 @@
   function syncInputs() {
     const s = S();
     $('#rsaP').value = s.p; $('#rsaQ').value = s.q; $('#rsaE').value = s.e; $('#rsaMsg').value = s.msg;
-    $('#sigMsg').value = s.sigMsg; $('#sigRecv').value = s.sigRecv; $('#rsaRealMsg').value = s.realMsg;
+    $('#rsaRealMsg').value = s.realMsg;
   }
   function init() {
     syncInputs();
-    const upd = debounce(() => { Store.save(); renderMini(false); renderSig(); }, 200);
+    const upd = debounce(() => { Store.save(); renderMini(false); }, 200);
     [['#rsaP', 'p'], ['#rsaQ', 'q'], ['#rsaE', 'e'], ['#rsaMsg', 'msg']].forEach(([id, k]) => $(id).addEventListener('input', (e) => { S()[k] = k === 'msg' ? e.target.value : +e.target.value; upd(); }));
-    $('#sigMsg').addEventListener('input', (e) => { S().sigMsg = e.target.value; upd(); });
-    $('#sigRecv').addEventListener('input', (e) => { S().sigRecv = e.target.value; upd(); });
     $('#rsaRealMsg').addEventListener('input', (e) => { S().realMsg = e.target.value; Store.save(); });
     $('#rsaPlay').addEventListener('click', () => { if (S().step >= 7) goMini(0, false); player.toggle(); });
     $('#rsaNext').addEventListener('click', () => { player.pause(); goMini(S().step + 1, true); });
@@ -305,14 +274,13 @@
     $('#rsaSign').addEventListener('click', realSign);
     flowKeys();
     renderMini(false);
-    renderSig();
     const rk = S().realKeys;
     if (rk && hasSubtle()) Real.importJwk(rk.pub, rk.priv).then(() => showKeyInfo(0)).catch(() => {});
   }
 
   window.RSAViz = {
     init, Real,
-    loadMini(o) { Object.assign(S(), o); selLetter = 0; syncInputs(); Store.save(); renderMini(false); renderSig(); },
+    loadMini(o) { Object.assign(S(), o); selLetter = 0; syncInputs(); Store.save(); renderMini(false); },
     go(i) { goMini(i, true); },
     play() { player.play(); },
     onHide() { player.pause(); },

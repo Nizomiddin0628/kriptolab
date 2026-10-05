@@ -93,9 +93,9 @@
           <tr><td>Kalitlar</td><td>1 ta umumiy maxfiy kalit</td><td>2 ta: ochiq va yopiq</td><td>Kalit yo‘q</td></tr>
           <tr><td>Asl matnni qaytarish</td><td>Ha, shu kalit bilan</td><td>Ha, yopiq kalit bilan</td><td>Yo‘q, bir tomonlama</td></tr>
           <tr><td>Natija uzunligi</td><td>Matn + to‘ldirish (16 ga karrali)</td><td>n bilan teng (2048 bit)</td><td>Doim 256 bit</td></tr>
-          <tr><td>Tezlik</td><td>Juda tez (protsessorda AES-NI)</td><td>Yuzlab–minglab marta sekin</td><td>Juda tez</td></tr>
+          <tr><td>Tezlik</td><td>Juda tez</td><td>Yuzlab–minglab marta sekin</td><td>Juda tez</td></tr>
           <tr><td>Asosiy vazifa</td><td>Maxfiylik (katta ma’lumot)</td><td>Kalit almashish, raqamli imzo</td><td>Yaxlitlik, imzo, parol saqlash</td></tr>
-          <tr><td>Xavfsizlik asosi</td><td>SPN tarmog‘i, 10–14 raund</td><td>Katta sonni faktorlash qiyinligi</td><td>Siqish funksiyasi, 64 raund</td></tr>
+          <tr><td>Xavfsizlik asosi</td><td>Bir necha raund almashtirish va aralashtirish</td><td>Katta sonni faktorlash qiyinligi</td><td>Bir tomonlamalik, kolliziyaga chidamlilik</td></tr>
         </tbody>
       </table>
     </div>
@@ -106,7 +106,7 @@
     <div class="path">
       <div><b>Qisqa nazariya</b><span class="small muted">Har bo‘lim boshida faqat bilish shart bo‘lgan fikrlar.</span></div>
       <div><b>Jonli animatsiya</b><span class="small muted">Har bir bayt, bit va son qanday o‘zgarishini qadamma-qadam ko‘rasiz.</span></div>
-      <div><b>Variant bo‘yicha topshiriq</b><span class="small muted">27 variantdan biri: qo‘lda hisoblash + dasturiy natija.</span></div>
+      <div><b>Variant bo‘yicha topshiriq</b><span class="small muted">27 variantdan biri: oddiy hisob + dasturiy natija.</span></div>
       <div><b>Animatsiyali tekshiruv</b><span class="small muted">Javobingizni tekshirgach, yechimni aynan sizning qiymatlaringiz bilan animatsiyada ko‘rasiz.</span></div>
     </div>
     <div class="row" style="margin-top:16px"><a class="btn" href="#history">Tarixdan boshlash</a><a class="btn ghost" href="#lab">To‘g‘ridan-to‘g‘ri topshiriqqa</a></div>
@@ -117,55 +117,43 @@
 <section class="page" id="page-history" data-page="history">
   <div class="page-head">
     <h2>Tarix va bugungi holat</h2>
-    <p class="lead">Uchala algoritm ham 1970–2000-yillarda paydo bo‘lgan va 2026-yilda ham internetning har bir HTTPS ulanishida ishlaydi. Farqi — kelajagi.</p>
+    <p class="lead">Uchala algoritm ham bugun har bir HTTPS saytda ishlaydi.</p>
   </div>
   <div class="grid-2">
     <div class="panel">
-      <h3>Asosiy sanalar</h3>
+      <h3>Qisqa tarix</h3>
       <ol class="timeline">
-        <li><span class="yr">1949</span><span class="pin"></span><div class="ev"><b>Shennon: chalkashlik va tarqatish</b><span>Claude Shannon shifr kuchli bo‘lishi uchun “confusion” va “diffusion” zarurligini isbotladi — AES aynan shunga qurilgan.</span></div></li>
-        <li><span class="yr">1976</span><span class="pin"></span><div class="ev"><b>Ochiq kalit g‘oyasi</b><span>Diffie va Hellman kalitni maxfiy kanalsiz kelishish mumkinligini ko‘rsatdi.</span></div></li>
-        <li class="aes"><span class="yr">1977</span><span class="pin"></span><div class="ev"><b>DES — birinchi ochiq standart</b><span>56 bitli kalit. 1998-yilda EFF qurilmasi uni 56 soatda buzdi.</span></div></li>
-        <li class="rsa"><span class="yr">1977</span><span class="pin"></span><div class="ev"><b>RSA ixtiro qilindi</b><span>Rivest, Shamir, Adleman (MIT). Birinchi amaliy ochiq kalitli shifr va imzo.</span></div></li>
-        <li class="sha"><span class="yr">1991–95</span><span class="pin"></span><div class="ev"><b>MD5 va SHA-1</b><span>Ikkalasi ham keyinchalik buzildi: MD5 kolliziyasi 2004-yilda, SHA-1 kolliziyasi (SHAttered) 2017-yilda topildi.</span></div></li>
-        <li class="aes"><span class="yr">2001</span><span class="pin"></span><div class="ev"><b>AES standarti (FIPS-197)</b><span>Belgiyalik Daemen va Rijmenning Rijndael shifri ochiq tanlovda g‘olib bo‘ldi.</span></div></li>
-        <li class="sha"><span class="yr">2001</span><span class="pin"></span><div class="ev"><b>SHA-2 oilasi (SHA-256)</b><span>NSA ishlab chiqdi, NIST standartlashtirdi. Bugungacha amaliy hujum topilmagan.</span></div></li>
-        <li class="rsa"><span class="yr">2018</span><span class="pin"></span><div class="ev"><b>TLS 1.3</b><span>HTTPS’da RSA bilan kalit uzatish olib tashlandi (ECDHE qoldi), lekin RSA imzolari sertifikatlarda ishlatilmoqda.</span></div></li>
-        <li class="pq"><span class="yr">2024</span><span class="pin"></span><div class="ev"><b>Postkvant standartlar</b><span>NIST FIPS 203/204/205 (ML-KEM, ML-DSA, SLH-DSA) — kvant kompyuterga chidamli algoritmlar.</span></div></li>
-        <li class="warn"><span class="yr">2030–35</span><span class="pin"></span><div class="ev"><b>RSA uchun reja</b><span>NIST IR 8547 loyihasi: 2030-yildan keyin RSA eskirgan, 2035-yildan keyin taqiqlangan deb belgilanadi.</span></div></li>
+        <li class="aes"><span class="yr">1977</span><span class="pin"></span><div class="ev"><b>DES</b><span>Birinchi ochiq simmetrik standart. 56 bitli kaliti qisqa bo‘lgani uchun 1998-yilda buzildi.</span></div></li>
+        <li class="rsa"><span class="yr">1977</span><span class="pin"></span><div class="ev"><b>RSA</b><span>Rivest, Shamir va Adleman ixtiro qildi. Birinchi amaliy ochiq kalitli shifr.</span></div></li>
+        <li class="sha"><span class="yr">1991–95</span><span class="pin"></span><div class="ev"><b>MD5 va SHA-1</b><span>Eski xesh funksiyalar. Keyinchalik kolliziya topilgani uchun eskirdi.</span></div></li>
+        <li class="aes"><span class="yr">2001</span><span class="pin"></span><div class="ev"><b>AES</b><span>DES o‘rniga yangi standart bo‘ldi (Rijndael shifri, mualliflari Daemen va Rijmen).</span></div></li>
+        <li class="sha"><span class="yr">2001</span><span class="pin"></span><div class="ev"><b>SHA-256</b><span>SHA-2 oilasi. Hozirgacha buzilmagan.</span></div></li>
       </ol>
     </div>
     <div>
       <div class="status-card aes" style="margin-bottom:16px">
-        <h3>AES — to‘liq faol</h3>
-        <span class="badge ok">Asosiy standart</span>
+        <h3>AES — faol ishlatiladi</h3>
         <ul>
-          <li>HTTPS (TLS 1.3 da AES-GCM)</li>
-          <li>Wi-Fi WPA2/WPA3, BitLocker, FileVault, telefon xotirasi</li>
-          <li>Signal, WhatsApp xabarlari</li>
-          <li>Protsessorlarda maxsus AES-NI buyruqlari</li>
+          <li>HTTPS saytlar</li>
+          <li>Wi-Fi (WPA2/WPA3), disk shifrlash (BitLocker)</li>
+          <li>Messenjerlar (WhatsApp, Signal)</li>
         </ul>
-        <div class="q">Kvant xavfi: Grover algoritmi kuchini ikki barobar kamaytiradi, shuning uchun AES-256 tavsiya etiladi — u xavfsiz qoladi.</div>
       </div>
       <div class="status-card rsa" style="margin-bottom:16px">
-        <h3>RSA — ishlaydi, lekin almashtirilmoqda</h3>
-        <span class="badge hot">Bosqichma-bosqich chiqariladi</span>
+        <h3>RSA — faol, lekin kamaymoqda</h3>
         <ul>
-          <li>Sayt sertifikatlari va kod imzolarida hali keng tarqalgan</li>
-          <li>SSH kalitlari, elektron pochta (S/MIME, PGP)</li>
-          <li>Yangi tizimlarda o‘rnini ECC (Ed25519, ECDSA) egallamoqda</li>
+          <li>Sayt sertifikatlari va raqamli imzo</li>
+          <li>SSH kalitlari, elektron pochta</li>
         </ul>
-        <div class="q">Kvant xavfi: Shor algoritmi RSA’ni to‘liq buzadi. Shuning uchun ML-KEM va ML-DSA’ga o‘tish boshlangan.</div>
+        <div class="q">Kelajakdagi kvant kompyuterlar RSA’ni buzishi mumkin. Shuning uchun AQSh standartlar instituti NIST uni 2030-yildan keyin eskirgan, 2035-yildan keyin taqiqlangan deb belgilashni rejalashtirmoqda.</div>
       </div>
       <div class="status-card sha">
-        <h3>SHA-256 — to‘liq faol</h3>
-        <span class="badge ok">Asosiy standart</span>
+        <h3>SHA-256 — faol ishlatiladi</h3>
         <ul>
-          <li>Sertifikat va dastur imzolari (avval xesh, keyin imzo)</li>
-          <li>Bitcoin bloklari va mayning</li>
-          <li>Fayl yaxlitligi (yuklab olish sahifalaridagi checksum), Git</li>
+          <li>Fayl yaxlitligini tekshirish</li>
+          <li>Raqamli imzo, parol saqlash</li>
+          <li>Bitcoin</li>
         </ul>
-        <div class="q">Kvant xavfi: kichik. SHA-256 postkvant davrda ham ruxsat etilgan.</div>
       </div>
     </div>
   </div>
@@ -176,18 +164,18 @@
 <section class="page" id="page-aes" data-page="aes">
   <div class="page-head">
     <span class="kicker" style="color:var(--aes)"><span class="sw" style="background:var(--aes)"></span>Simmetrik shifrlash</span>
-    <h2>AES: bitta kalit, 16 baytlik blok, 10–14 raund</h2>
+    <h2>AES: bitta kalit, 16 baytlik blok</h2>
     <p class="lead">Shifrlash va ochish uchun bitta kalit: <span class="formula">C = E(K, M)</span>, <span class="formula">M = D(K, C)</span>.</p>
   </div>
 
   <div class="panel aes">
     <h3>Bilish shart bo‘lgan fikrlar</h3>
     <ul class="keypoints" style="--accent:var(--aes)">
-      <li><b>Blok 128 bit (16 bayt)</b>, 4×4 baytli “holat” jadvali ko‘rinishida. Kalit 128/192/256 bit → <b>10/12/14 raund</b>.</li>
-      <li>Har raundda 4 amal: <b>SubBytes</b> — S-box orqali har baytni almashtirish (chiziqsizlik); <b>ShiftRows</b> — qatorlarni surish; <b>MixColumns</b> — ustunni aralashtirish (tarqatish); <b>AddRoundKey</b> — raund kaliti bilan XOR. Oxirgi raundda MixColumns yo‘q.</li>
-      <li><b>Rejim muhim.</b> ECB bir xil bloklarni bir xil shifrlaydi (pastdagi rasmga qarang). CBC har blokni oldingi shifr blok bilan XOR qiladi va tasodifiy <b>IV</b> talab qiladi. Bugungi standart — <b>GCM</b> (shifrlash + yaxlitlik).</li>
-      <li><b>PKCS7 to‘ldirish:</b> yetishmagan N bayt N qiymati bilan to‘ldiriladi. Matn 16 ga karrali bo‘lsa ham to‘liq 16 baytli blok qo‘shiladi.</li>
-      <li><b>Zaif joyi — kalitni yetkazish.</b> Ikki tomon kalitni oldindan qanday kelishadi? Buni RSA yoki Diffie-Hellman hal qiladi.</li>
+      <li><b>Bitta kalit:</b> shifrlash ham, ochish ham bitta maxfiy kalit bilan: <span class="formula">C = E(K, M)</span>, <span class="formula">M = D(K, C)</span>.</li>
+      <li><b>Blok 128 bit (16 bayt).</b> Kalit uzunligi 128, 192 yoki 256 bit bo‘lishi mumkin (amaliy ishda AES-256).</li>
+      <li><b>Bir necha raund:</b> har raundda 4 amal — <b>SubBytes</b> (baytlarni jadval bo‘yicha almashtirish), <b>ShiftRows</b> (qatorlarni surish), <b>MixColumns</b> (ustunlarni aralashtirish), <b>AddRoundKey</b> (raund kaliti bilan XOR).</li>
+      <li><b>Rejimlar:</b> ECB, CBC, GCM. CBC rejimida har bir blok oldingi shifr blok bilan XOR qilinadi, shuning uchun tasodifiy <b>IV</b> kerak.</li>
+      <li><b>PKCS7 to‘ldirish:</b> oxirgi blok 16 baytga yetmasa, yetishmagan N bayt N qiymati bilan to‘ldiriladi.</li>
     </ul>
   </div>
 
@@ -248,23 +236,7 @@
     </div>
   </div>
 
-  <div class="panel aes">
-    <div class="panel-head"><h3>4. Raund kalitlari (Key Expansion)</h3><span class="small muted">Joriy raund kaliti belgilangan</span></div>
-    <p class="small muted">Asosiy kalitdan har raund uchun 16 baytlik kalit hosil qilinadi: oxirgi so‘z aylantiriladi (RotWord), S-box’dan o‘tkaziladi (SubWord), Rcon bilan XOR qilinadi va Nk so‘z oldingi so‘z bilan XOR qilinadi.</p>
-    <div class="table-wrap"><table id="aesRk"></table></div>
-    <details class="full"><summary>Birinchi hosil qilingan so‘z qanday hisoblanadi</summary><div id="aesW0"></div></details>
-  </div>
 
-  <div class="panel aes">
-    <h3>5. Nega ECB xavfli: rasmni shifrlab ko‘ramiz</h3>
-    <p class="small muted">Har bir piksel bitta bayt. ECB rejimida bir xil 16 piksellik bo‘laklar bir xil shifrlanadi — shakl ko‘rinib qoladi. CBC’da esa har blok oldingisiga bog‘liq, natija shovqinga o‘xshaydi.</p>
-    <div class="ecb-demo">
-      <figure><canvas id="ecbOrig" width="128" height="128"></canvas><figcaption>Asl rasm<span>128×128 = 16 384 bayt</span></figcaption></figure>
-      <figure><canvas id="ecbEcb" width="128" height="128"></canvas><figcaption>AES-ECB<span>shakl ko‘rinadi</span></figcaption></figure>
-      <figure><canvas id="ecbCbc" width="128" height="128"></canvas><figcaption>AES-CBC<span>shakl yo‘qoldi</span></figcaption></figure>
-    </div>
-    <div class="row" style="margin-top:12px"><button class="btn ghost sm" id="ecbRedo">Yangi kalit bilan qayta shifrlash</button></div>
-  </div>
   <div class="row"><a class="btn rsa" href="#rsa">RSA bo‘limiga o‘tish</a></div>
 </section>
 
@@ -279,12 +251,12 @@
   <div class="panel rsa">
     <h3>Bilish shart bo‘lgan fikrlar</h3>
     <ul class="keypoints" style="--accent:var(--rsa)">
-      <li><b>Ikki kalit:</b> ochiq kalit <span class="formula">(e, n)</span> hammaga beriladi, yopiq kalit <span class="formula">(d, n)</span> faqat egasida.</li>
-      <li><b>Xavfsizlik asosi:</b> <span class="formula">n = p·q</span> ni hisoblash oson, lekin n dan p va q ni topish (faktorlash) 2048 bitli (617 xonali) son uchun amalda imkonsiz.</li>
-      <li><b>Kalit yaratish:</b> <span class="formula">φ(n) = (p−1)(q−1)</span>, <span class="formula">gcd(e, φ) = 1</span> (odatda e = 65537), <span class="formula">e·d ≡ 1 (mod φ)</span> — d kengaytirilgan Evklid algoritmi bilan topiladi.</li>
-      <li><b>Imzo — teskari yo‘nalish:</b> yopiq kalit bilan imzolanadi <span class="formula">s = h<sup>d</sup> mod n</span>, ochiq kalit bilan tekshiriladi <span class="formula">s<sup>e</sup> mod n = h</span>.</li>
-      <li><b>Amalda “sof” RSA ishlatilmaydi:</b> shifrlash uchun OAEP, imzo uchun PSS to‘ldirish qo‘llanadi. OAEP tufayli bir xil matn har safar boshqacha shifrlanadi.</li>
-      <li><b>Sekin.</b> Shuning uchun RSA katta faylni emas, faqat AES kalitini yoki xeshni shifrlaydi.</li>
+      <li><b>Ikki kalit:</b> ochiq kalit <span class="formula">(e, n)</span> hammaga ma’lum, yopiq kalit <span class="formula">(d, n)</span> faqat egasida.</li>
+      <li><b>Xavfsizlik asosi:</b> <span class="formula">n = p·q</span> ni hisoblash oson, lekin katta n ni qaytadan p va q ga ajratish (faktorlash) amalda imkonsiz.</li>
+      <li><b>Kalit yaratish:</b> <span class="formula">φ(n) = (p−1)(q−1)</span>; e (odatda 65537) φ(n) bilan o‘zaro tub tanlanadi; d esa <span class="formula">e·d ≡ 1 (mod φ(n))</span> shartidan topiladi.</li>
+      <li><b>Shifrlash va ochish:</b> <span class="formula">C = M<sup>e</sup> mod n</span> ochiq kalit bilan, <span class="formula">M = C<sup>d</sup> mod n</span> yopiq kalit bilan.</li>
+      <li><b>Raqamli imzo — teskari tartib:</b> xabar yopiq kalit bilan imzolanadi, ochiq kalit bilan tekshiriladi.</li>
+      <li><b>Amaliy ishda:</b> 2048 bitli kalit, shifrlash OAEP, imzo PSS sxemasi bilan.</li>
     </ul>
   </div>
 
@@ -319,17 +291,6 @@
     <div class="steps-v" id="rsaSteps"></div>
   </div>
 
-  <div class="panel rsa">
-    <div class="panel-head"><h3>Mini-imzo: xabar o‘zgarsa nima bo‘ladi</h3></div>
-    <div class="grid-2">
-      <label class="field">Imzolanadigan xabar<input type="text" id="sigMsg" value="100 so‘m o‘tkazilsin" autocomplete="off"></label>
-      <label class="field">Qabul qilingan xabar (o‘zgartirib ko‘ring)<input type="text" id="sigRecv" value="100 so‘m o‘tkazilsin" autocomplete="off"></label>
-    </div>
-    <div class="grid-2" style="margin-top:14px">
-      <div class="detail" style="min-height:0"><h4>Yuboruvchi (yopiq kalit d)</h4><div id="sigSend"></div></div>
-      <div class="detail" style="min-height:0"><h4>Qabul qiluvchi (ochiq kalit e)</h4><div id="sigCheck"></div></div>
-    </div>
-  </div>
 
   <div class="panel rsa">
     <div class="panel-head"><h3>Haqiqiy RSA-2048 (brauzerning WebCrypto API’si)</h3><span class="badge" id="rsaRealStatus">kalit yaratilmagan</span></div>
@@ -343,7 +304,7 @@
       <button class="btn ghost" id="rsaSign" disabled>Imzolash va tekshirish</button>
     </div>
     <div class="console" id="rsaConsole" style="margin-top:14px">Kalit juftligini yarating.</div>
-    <p class="small muted" style="margin-top:10px">“Shifrlash” tugmasini ikki marta bosing: bir xil matn har safar boshqa shifr matn beradi — bu OAEP to‘ldirishidagi tasodifiylik.</p>
+
   </div>
   <div class="row"><a class="btn sha" href="#sha">SHA-256 bo‘limiga o‘tish</a></div>
 </section>
@@ -352,65 +313,33 @@
 <section class="page" id="page-sha" data-page="sha">
   <div class="page-head">
     <span class="kicker" style="color:var(--sha)"><span class="sw" style="background:var(--sha)"></span>Kriptografik xesh funksiya</span>
-    <h2>SHA-256: istalgan matndan 256 bitlik barmoq izi</h2>
-    <p class="lead"><span class="formula">H: {0,1}* → {0,1}<sup>256</sup></span>. Kalit yo‘q, natijadan asl matnni qaytarib bo‘lmaydi.</p>
+    <h2>SHA-256: istalgan matndan 256 bitlik xesh</h2>
+    <p class="lead"><span class="formula">H: {0,1}* → {0,1}<sup>256</sup></span>. Ixtiyoriy uzunlikdagi kirish qat’iy 256 bitli chiqishga aylanadi.</p>
   </div>
 
   <div class="panel sha">
     <h3>Bilish shart bo‘lgan fikrlar</h3>
     <ul class="keypoints" style="--accent:var(--sha)">
-      <li><b>Bir tomonlamalik:</b> H(M) ma’lum bo‘lsa ham, M ni topish amalda imkonsiz.</li>
-      <li><b>Kolliziyaga chidamlilik:</b> H(M1) = H(M2) bo‘ladigan ikki xil M1 ≠ M2 ni topish amalda imkonsiz.</li>
-      <li><b>Lavina effekti:</b> kirishdagi 1 bit o‘zgarsa, chiqishdagi bitlarning taxminan yarmi (≈128 tasi) o‘zgaradi.</li>
-      <li><b>Ishlash tartibi:</b> to‘ldirish <span class="formula">L + 1 + k ≡ 448 (mod 512)</span> va 64 bitli uzunlik → 512 bitli bloklar → 64 so‘zli jadval W → a…h registrlari ustida 64 raund.</li>
-      <li><b>Parol uchun yolg‘iz SHA-256 yetmaydi:</b> u juda tez, shuning uchun brute-force ham tez. Tuz (salt) va sekin funksiya — PBKDF2, bcrypt, Argon2 kerak.</li>
-      <li><b>MD5 va SHA-1 buzilgan</b> — ulardan xavfsizlik uchun foydalanmang.</li>
+      <li><b>Qat’iy uzunlik:</b> kirish 1 harf bo‘lsin yoki butun kitob, natija doim 256 bit (64 ta hex belgi).</li>
+      <li><b>Bir tomonlamalik:</b> H(M) qiymati bo‘yicha M ni topish amalda imkonsiz.</li>
+      <li><b>Kolliziyaga chidamlilik:</b> H(M1) = H(M2) bo‘ladigan ikkita turli M1 ≠ M2 ni topish amalda imkonsiz.</li>
+      <li><b>Lavina effekti:</b> kirishdagi bitta bit o‘zgarsa, chiqishdagi bitlarning taxminan yarmi o‘zgaradi.</li>
+      <li><b>Qo‘llanilishi:</b> ma’lumotlar yaxlitligini tekshirish, parollarni saqlash, raqamli imzo.</li>
     </ul>
   </div>
 
   <div class="panel sha">
-    <div class="panel-head"><h3>1. Matn va to‘ldirish (padding)</h3><span class="badge ok hidden" id="shaVerify">WebCrypto natijasi bilan mos</span></div>
-    <label class="field">Matn<input type="text" id="shaText" value="cybersecurity" autocomplete="off" spellcheck="false"></label>
-    <div class="bytes" id="shaBytes" style="margin-top:12px"></div>
-    <p class="small" id="shaPadInfo" style="margin-top:12px"></p>
-    <div class="legend" style="margin-bottom:8px"><span><i style="background:var(--sha)"></i>Xabar biti 1</span><span><i style="background:var(--sha-soft);border:1px solid var(--sha)"></i>Xabar biti 0</span><span><i style="background:var(--hot)"></i>Qo‘shilgan “1”</span><span><i style="background:var(--surface-2);border:1px solid var(--line)"></i>k ta nol</span><span><i style="background:var(--rsa)"></i>64 bitli uzunlik L</span></div>
-    <div class="row" id="shaBlockSel" style="margin-bottom:8px"></div>
-    <div class="padgrid" id="shaPadGrid"></div>
+    <div class="panel-head"><h3>1. Matn → xesh</h3><span class="badge ok hidden" id="shaVerify">WebCrypto natijasi bilan mos</span></div>
+    <label class="field">Matn (istalgan uzunlikda yozib ko‘ring)<input type="text" id="shaText" value="cybersecurity" autocomplete="off" spellcheck="false"></label>
+    <dl class="kv" style="margin:14px 0">
+      <dt>Kirish uzunligi</dt><dd id="shaInLen"></dd>
+      <dt>Xesh uzunligi</dt><dd>256 bit = 64 hex belgi (doim)</dd>
+    </dl>
+    <div class="hexline" id="shaOut" style="font-size:1rem"></div>
   </div>
 
   <div class="panel sha">
-    <div class="panel-head"><h3>2. Xabar jadvali W[0…63]</h3><span class="small muted">W[16] dan boshlab istalgan so‘zni bosing</span></div>
-    <div class="wgrid" id="shaW"></div>
-    <div class="detail" id="shaWDetail" style="margin-top:12px;min-height:0"></div>
-  </div>
-
-  <div class="panel sha">
-    <div class="panel-head"><h3>3. Siqish: 64 raund</h3><span class="badge sha" id="shaRoundLbl">0-raund</span></div>
-    <div class="player">
-      <span class="step-label" id="shaStepLbl"></span>
-      <button class="btn ghost sm" id="shaFirst">⏮</button>
-      <button class="btn ghost sm" id="shaPrev">◀</button>
-      <button class="btn sha sm" id="shaPlay">▶ Ijro</button>
-      <button class="btn ghost sm" id="shaNext">▶</button>
-      <button class="btn ghost sm" id="shaLast">⏭</button>
-      <label class="speed">Tezlik <input type="range" id="shaSpeed" min="0.25" max="4" step="0.25" value="1"></label>
-    </div>
-    <input type="range" id="shaScrub" min="0" max="64" value="0" style="margin:12px 0" aria-label="Raund">
-    <div class="grid-2">
-      <div><h4>Registrlar</h4><div class="regs" id="shaRegs"></div></div>
-      <div class="detail" id="shaRoundDetail"></div>
-    </div>
-  </div>
-
-  <div class="panel sha">
-    <h3>4. Yakuniy xesh</h3>
-    <p class="small muted">Har blok oxirida registrlar boshlang‘ich qiymatlarga (mod 2<sup>32</sup>) qo‘shiladi.</p>
-    <div class="table-wrap"><table id="shaFinal"></table></div>
-    <div class="hexline" id="shaDigest" style="margin-top:12px"></div>
-  </div>
-
-  <div class="panel sha">
-    <div class="panel-head"><h3>5. Lavina effekti</h3></div>
+    <div class="panel-head"><h3>2. Lavina effekti</h3></div>
     <div class="grid-2">
       <label class="field">Matn 1<input type="text" id="avA" value="cybersecurity" autocomplete="off" spellcheck="false"></label>
       <label class="field">Matn 2<input type="text" id="avB" value="Cybersecurity" autocomplete="off" spellcheck="false"></label>
@@ -426,21 +355,10 @@
     </div>
     <hr class="sep">
     <h4>Tajriba: 1 bitni 500 marta tasodifiy o‘zgartirsak</h4>
-    <p class="small muted">Har safar Matn 1 dagi bitta tasodifiy bit almashtiriladi va xeshdagi farq soni hisoblanadi. Natijalar 128 atrofida to‘planadi.</p>
+    <p class="small muted">Har safar Matn 1 dagi bitta tasodifiy bit almashtiriladi va xeshdagi farq soni hisoblanadi. Natijalar 128 atrofida (256 ning yarmi) to‘planadi.</p>
     <div class="row"><button class="btn sha sm" id="avRun">Tajribani boshlash</button><span class="small" id="avRunInfo"></span></div>
     <div class="hist" id="avHist" style="margin-top:12px"></div>
     <div class="hist-axis"><span>96</span><span>112</span><span>128</span><span>144</span><span>160</span></div>
-  </div>
-
-  <div class="panel sha">
-    <div class="panel-head"><h3>6. Bir tomonlamalik: xeshdan so‘zni topib ko‘ring</h3></div>
-    <p class="small muted">Xeshni “ochib” bo‘lmaydi — faqat barcha variantlarni sinab ko‘rish mumkin. 4 harfli kichik lotin so‘zi uchun 26⁴ = 456 976 variant bor.</p>
-    <div class="grid-2">
-      <label class="field">Yashirin so‘z (4 ta kichik harf)<input type="text" id="bfWord" value="kalt" maxlength="4" autocomplete="off"></label>
-      <div><div class="small muted">Uning xeshi:</div><div class="hexline" id="bfHash" style="font-size:.78rem"></div></div>
-    </div>
-    <div class="row" style="margin-top:12px"><button class="btn sha" id="bfRun">Brute-force boshlash</button><span class="small" id="bfInfo"></span></div>
-    <div class="callout info" id="bfNote" style="display:none"></div>
   </div>
   <div class="row"><a class="btn" href="#hybrid">Gibrid tizimga o‘tish</a></div>
 </section>
@@ -453,10 +371,10 @@
   </div>
   <div class="panel">
     <ul class="keypoints">
-      <li>Katta ma’lumot <b>AES</b> bilan shifrlanadi — tasodifiy, bir martalik kalit bilan.</li>
-      <li>Shu AES kaliti qabul qiluvchining <b>RSA ochiq kaliti</b> bilan shifrlanib yuboriladi (“kalitni o‘rash”).</li>
-      <li>Xabarning <b>SHA-256</b> xeshi yuboruvchining yopiq kaliti bilan imzolanadi — kim yuborgani va o‘zgarmagani tasdiqlanadi.</li>
-      <li><b>HTTPS (TLS 1.3)</b> shu g‘oyada ishlaydi: kalit ECDHE orqali kelishiladi, ma’lumot AES-GCM bilan shifrlanadi, server sertifikati RSA yoki ECDSA imzosi bilan tekshiriladi, SHA-256/384 hamma joyda.</li>
+      <li><b>Simmetrik (AES)</b> juda tez, lekin kalitni ikkinchi tomonga xavfsiz yetkazish muammosi bor.</li>
+      <li><b>Asimmetrik (RSA)</b> kalitni xavfsiz yetkazadi va raqamli imzo beradi, lekin sekin.</li>
+      <li><b>Xesh (SHA-256)</b> ma’lumot o‘zgarmaganini (yaxlitligini) tekshiradi.</li>
+      <li>Shuning uchun amalda, masalan <b>TLS (HTTPS)</b> protokolida, uchalasi birga ishlatiladi: AES kaliti asimmetrik usul bilan yetkaziladi, ma’lumot AES bilan shifrlanadi, xesh va imzo yaxlitlikni ta’minlaydi.</li>
     </ul>
   </div>
   <div class="panel">
