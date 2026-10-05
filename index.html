@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KriptoLab: AES, RSA, SHA-256</title>
+<meta name="description" content="2-amaliy ish: zamonaviy simmetrik (AES), ochiq kalitli (RSA) shifrlash va SHA-256 xesh funksiyasini jonli animatsiyalar orqali o‘rganish va amaliy topshiriqni bajarish.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='7' height='7' rx='1.5' fill='%230f7a7a'/%3E%3Crect x='9' width='7' height='7' rx='1.5' fill='%234f46e5'/%3E%3Crect y='9' width='7' height='7' rx='1.5' fill='%23a3238f'/%3E%3Crect x='9' y='9' width='7' height='7' rx='1.5' fill='%23e8a317'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  // Mavzuni sahifa chizilishidan oldin qo‘llash (miltillamasligi uchun)
+  try { var t = JSON.parse(localStorage.getItem('kriptolab.theme') || 'null'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#home" aria-label="KriptoLab bosh sahifa">
+    <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+    KriptoLab <small>2-amaliy ish</small>
+  </a>
+  <span class="spacer"></span>
+  <div class="save-chip" id="saveChip" title="Ishingiz shu brauzerda saqlanadi">
+    <span class="dot"></span><span id="saveText">Saqlanmoqda…</span>
+  </div>
+  <button class="icon-btn" id="themeBtn" aria-label="Yorug‘/qorong‘i rejim">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  </button>
+</header>
+
+<div class="shell">
+  <nav class="sidenav" aria-label="Bo‘limlar">
+    <ol>
+      <li><a href="#home" data-nav="home">Kirish</a></li>
+      <li><a href="#history" data-nav="history">Tarix va bugun</a></li>
+      <li><a href="#aes" data-nav="aes">AES <span class="tag aes"></span></a></li>
+      <li><a href="#rsa" data-nav="rsa">RSA <span class="tag rsa"></span></a></li>
+      <li><a href="#sha" data-nav="sha">SHA-256 <span class="tag sha"></span></a></li>
+      <li><a href="#hybrid" data-nav="hybrid">Gibrid tizim</a></li>
+      <li><a href="#lab" data-nav="lab">Amaliy topshiriq</a></li>
+      <li><a href="#quiz" data-nav="quiz">Nazorat savollari</a></li>
+      <li><a href="#report" data-nav="report">Hisobot</a></li>
+    </ol>
+    <div class="nav-progress">
+      Topshiriq bajarilishi: <b id="navProgText">0 / 4</b>
+      <div class="bar"><span id="navProgBar"></span></div>
+      <p class="xs" style="margin-top:12px">Natijalaringiz shu brauzerda oxirgi harakatdan keyin <b>30 daqiqa</b> saqlanadi.</p>
+      <button class="btn ghost sm" id="resetBtn" style="margin-top:4px">Hammasini tozalash</button>
+    </div>
+  </nav>
+
+  <main id="main">
+
+<!-- ===================== 1. KIRISH ===================== -->
+<section class="page" id="page-home" data-page="home">
+  <div class="hero">
+    <div>
+      <h1>Bitta so‘z, uchta yo‘l</h1>
+      <p class="lead">So‘z yozing va kuzating: AES uni bitta maxfiy kalit bilan yashiradi, RSA ikki kalit bilan qulflaydi, SHA-256 esa undan qaytarib bo‘lmaydigan “barmoq izi” oladi.</p>
+      <div class="hero-input">
+        <input type="text" id="heroInput" value="cybersecurity" maxlength="40" aria-label="Matn kiriting" autocomplete="off" spellcheck="false">
+        <button class="btn ghost" id="heroRandom">Boshqa so‘z</button>
+      </div>
+    </div>
+    <div class="lanes">
+      <div class="lane aes">
+        <div class="name">AES-256 <small>CBC rejimi</small></div>
+        <div class="out" id="laneAes"></div>
+        <div class="meta"><span class="badge aes">1 ta maxfiy kalit</span><span class="badge">qaytariladi</span><span class="badge">juda tez</span><span class="badge" id="laneAesLen"></span></div>
+      </div>
+      <div class="lane rsa">
+        <div class="name">RSA <small>o‘quv: n = 3233</small></div>
+        <div class="out" id="laneRsa"></div>
+        <div class="meta"><span class="badge rsa">ochiq + yopiq kalit</span><span class="badge">qaytariladi</span><span class="badge">sekin</span><span class="badge">har bir harf: C = M¹⁷ mod 3233</span></div>
+      </div>
+      <div class="lane sha">
+        <div class="name">SHA-256 <small>xesh</small></div>
+        <div class="out" id="laneSha"></div>
+        <div class="meta"><span class="badge sha">kalitsiz</span><span class="badge">qaytarilmaydi</span><span class="badge">doim 256 bit = 64 hex</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Uchalasining asosiy farqi</h3>
+    <div class="table-wrap">
+      <table class="compare">
+        <thead><tr><th></th><th class="aes">AES (simmetrik)</th><th class="rsa">RSA (asimmetrik)</th><th class="sha">SHA-256 (xesh)</th></tr></thead>
+        <tbody>
+          <tr><td>Kalitlar</td><td>1 ta umumiy maxfiy kalit</td><td>2 ta: ochiq va yopiq</td><td>Kalit yo‘q</td></tr>
+          <tr><td>Asl matnni qaytarish</td><td>Ha, shu kalit bilan</td><td>Ha, yopiq kalit bilan</td><td>Yo‘q, bir tomonlama</td></tr>
+          <tr><td>Natija uzunligi</td><td>Matn + to‘ldirish (16 ga karrali)</td><td>n bilan teng (2048 bit)</td><td>Doim 256 bit</td></tr>
+          <tr><td>Tezlik</td><td>Juda tez (protsessorda AES-NI)</td><td>Yuzlab–minglab marta sekin</td><td>Juda tez</td></tr>
+          <tr><td>Asosiy vazifa</td><td>Maxfiylik (katta ma’lumot)</td><td>Kalit almashish, raqamli imzo</td><td>Yaxlitlik, imzo, parol saqlash</td></tr>
+          <tr><td>Xavfsizlik asosi</td><td>SPN tarmog‘i, 10–14 raund</td><td>Katta sonni faktorlash qiyinligi</td><td>Siqish funksiyasi, 64 raund</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel flat">
+    <h3>Bu saytda qanday o‘rganasiz</h3>
+    <div class="path">
+      <div><b>Qisqa nazariya</b><span class="small muted">Har bo‘lim boshida faqat bilish shart bo‘lgan fikrlar.</span></div>
+      <div><b>Jonli animatsiya</b><span class="small muted">Har bir bayt, bit va son qanday o‘zgarishini qadamma-qadam ko‘rasiz.</span></div>
+      <div><b>Variant bo‘yicha topshiriq</b><span class="small muted">27 variantdan biri: qo‘lda hisoblash + dasturiy natija.</span></div>
+      <div><b>Animatsiyali tekshiruv</b><span class="small muted">Javobingizni tekshirgach, yechimni aynan sizning qiymatlaringiz bilan animatsiyada ko‘rasiz.</span></div>
+    </div>
+    <div class="row" style="margin-top:16px"><a class="btn" href="#history">Tarixdan boshlash</a><a class="btn ghost" href="#lab">To‘g‘ridan-to‘g‘ri topshiriqqa</a></div>
+  </div>
+</section>
+
+<!-- ===================== 2. TARIX ===================== -->
+<section class="page" id="page-history" data-page="history">
+  <div class="page-head">
+    <h2>Tarix va bugungi holat</h2>
+    <p class="lead">Uchala algoritm ham 1970–2000-yillarda paydo bo‘lgan va 2026-yilda ham internetning har bir HTTPS ulanishida ishlaydi. Farqi — kelajagi.</p>
+  </div>
+  <div class="grid-2">
+    <div class="panel">
+      <h3>Asosiy sanalar</h3>
+      <ol class="timeline">
+        <li><span class="yr">1949</span><span class="pin"></span><div class="ev"><b>Shennon: chalkashlik va tarqatish</b><span>Claude Shannon shifr kuchli bo‘lishi uchun “confusion” va “diffusion” zarurligini isbotladi — AES aynan shunga qurilgan.</span></div></li>
+        <li><span class="yr">1976</span><span class="pin"></span><div class="ev"><b>Ochiq kalit g‘oyasi</b><span>Diffie va Hellman kalitni maxfiy kanalsiz kelishish mumkinligini ko‘rsatdi.</span></div></li>
+        <li class="aes"><span class="yr">1977</span><span class="pin"></span><div class="ev"><b>DES — birinchi ochiq standart</b><span>56 bitli kalit. 1998-yilda EFF qurilmasi uni 56 soatda buzdi.</span></div></li>
+        <li class="rsa"><span class="yr">1977</span><span class="pin"></span><div class="ev"><b>RSA ixtiro qilindi</b><span>Rivest, Shamir, Adleman (MIT). Birinchi amaliy ochiq kalitli shifr va imzo.</span></div></li>
+        <li class="sha"><span class="yr">1991–95</span><span class="pin"></span><div class="ev"><b>MD5 va SHA-1</b><span>Ikkalasi ham keyinchalik buzildi: MD5 kolliziyasi 2004-yilda, SHA-1 kolliziyasi (SHAttered) 2017-yilda topildi.</span></div></li>
+        <li class="aes"><span class="yr">2001</span><span class="pin"></span><div class="ev"><b>AES standarti (FIPS-197)</b><span>Belgiyalik Daemen va Rijmenning Rijndael shifri ochiq tanlovda g‘olib bo‘ldi.</span></div></li>
+        <li class="sha"><span class="yr">2001</span><span class="pin"></span><div class="ev"><b>SHA-2 oilasi (SHA-256)</b><span>NSA ishlab chiqdi, NIST standartlashtirdi. Bugungacha amaliy hujum topilmagan.</span></div></li>
+        <li class="rsa"><span class="yr">2018</span><span class="pin"></span><div class="ev"><b>TLS 1.3</b><span>HTTPS’da RSA bilan kalit uzatish olib tashlandi (ECDHE qoldi), lekin RSA imzolari sertifikatlarda ishlatilmoqda.</span></div></li>
+        <li class="pq"><span class="yr">2024</span><span class="pin"></span><div class="ev"><b>Postkvant standartlar</b><span>NIST FIPS 203/204/205 (ML-KEM, ML-DSA, SLH-DSA) — kvant kompyuterga chidamli algoritmlar.</span></div></li>
+        <li class="warn"><span class="yr">2030–35</span><span class="pin"></span><div class="ev"><b>RSA uchun reja</b><span>NIST IR 8547 loyihasi: 2030-yildan keyin RSA eskirgan, 2035-yildan keyin taqiqlangan deb belgilanadi.</span></div></li>
+      </ol>
+    </div>
+    <div>
+      <div class="status-card aes" style="margin-bottom:16px">
+        <h3>AES — to‘liq faol</h3>
+        <span class="badge ok">Asosiy standart</span>
+        <ul>
+          <li>HTTPS (TLS 1.3 da AES-GCM)</li>
+          <li>Wi-Fi WPA2/WPA3, BitLocker, FileVault, telefon xotirasi</li>
+          <li>Signal, WhatsApp xabarlari</li>
+          <li>Protsessorlarda maxsus AES-NI buyruqlari</li>
+        </ul>
+        <div class="q">Kvant xavfi: Grover algoritmi kuchini ikki barobar kamaytiradi, shuning uchun AES-256 tavsiya etiladi — u xavfsiz qoladi.</div>
+      </div>
+      <div class="status-card rsa" style="margin-bottom:16px">
+        <h3>RSA — ishlaydi, lekin almashtirilmoqda</h3>
+        <span class="badge hot">Bosqichma-bosqich chiqariladi</span>
+        <ul>
+          <li>Sayt sertifikatlari va kod imzolarida hali keng tarqalgan</li>
+          <li>SSH kalitlari, elektron pochta (S/MIME, PGP)</li>
+          <li>Yangi tizimlarda o‘rnini ECC (Ed25519, ECDSA) egallamoqda</li>
+        </ul>
+        <div class="q">Kvant xavfi: Shor algoritmi RSA’ni to‘liq buzadi. Shuning uchun ML-KEM va ML-DSA’ga o‘tish boshlangan.</div>
+      </div>
+      <div class="status-card sha">
+        <h3>SHA-256 — to‘liq faol</h3>
+        <span class="badge ok">Asosiy standart</span>
+        <ul>
+          <li>Sertifikat va dastur imzolari (avval xesh, keyin imzo)</li>
+          <li>Bitcoin bloklari va mayning</li>
+          <li>Fayl yaxlitligi (yuklab olish sahifalaridagi checksum), Git</li>
+        </ul>
+        <div class="q">Kvant xavfi: kichik. SHA-256 postkvant davrda ham ruxsat etilgan.</div>
+      </div>
+    </div>
+  </div>
+  <div class="row"><a class="btn aes" href="#aes">AES bo‘limiga o‘tish</a></div>
+</section>
+
+<!-- ===================== 3. AES ===================== -->
+<section class="page" id="page-aes" data-page="aes">
+  <div class="page-head">
+    <span class="kicker" style="color:var(--aes)"><span class="sw" style="background:var(--aes)"></span>Simmetrik shifrlash</span>
+    <h2>AES: bitta kalit, 16 baytlik blok, 10–14 raund</h2>
+    <p class="lead">Shifrlash va ochish uchun bitta kalit: <span class="formula">C = E(K, M)</span>, <span class="formula">M = D(K, C)</span>.</p>
+  </div>
+
+  <div class="panel aes">
+    <h3>Bilish shart bo‘lgan fikrlar</h3>
+    <ul class="keypoints" style="--accent:var(--aes)">
+      <li><b>Blok 128 bit (16 bayt)</b>, 4×4 baytli “holat” jadvali ko‘rinishida. Kalit 128/192/256 bit → <b>10/12/14 raund</b>.</li>
+      <li>Har raundda 4 amal: <b>SubBytes</b> — S-box orqali har baytni almashtirish (chiziqsizlik); <b>ShiftRows</b> — qatorlarni surish; <b>MixColumns</b> — ustunni aralashtirish (tarqatish); <b>AddRoundKey</b> — raund kaliti bilan XOR. Oxirgi raundda MixColumns yo‘q.</li>
+      <li><b>Rejim muhim.</b> ECB bir xil bloklarni bir xil shifrlaydi (pastdagi rasmga qarang). CBC har blokni oldingi shifr blok bilan XOR qiladi va tasodifiy <b>IV</b> talab qiladi. Bugungi standart — <b>GCM</b> (shifrlash + yaxlitlik).</li>
+      <li><b>PKCS7 to‘ldirish:</b> yetishmagan N bayt N qiymati bilan to‘ldiriladi. Matn 16 ga karrali bo‘lsa ham to‘liq 16 baytli blok qo‘shiladi.</li>
+      <li><b>Zaif joyi — kalitni yetkazish.</b> Ikki tomon kalitni oldindan qanday kelishadi? Buni RSA yoki Diffie-Hellman hal qiladi.</li>
+    </ul>
+  </div>
+
+  <div class="panel aes">
+    <div class="panel-head"><h3>1. Kirish ma’lumotlari</h3><span class="badge ok hidden" id="aesVerify">WebCrypto natijasi bilan mos</span></div>
+    <div class="grid-2">
+      <label class="field">Ochiq matn
+        <input type="text" id="aesText" value="Symmetric encryption example" autocomplete="off" spellcheck="false">
+      </label>
+      <label class="field">Kalit uzunligi
+        <span class="seg" id="aesKeySize"><button data-v="16">AES-128</button><button data-v="24">AES-192</button><button data-v="32" aria-pressed="true">AES-256</button></span>
+      </label>
+      <label class="field">Kalit K (hex)
+        <input type="text" class="mono" id="aesKey" spellcheck="false">
+      </label>
+      <label class="field">IV (hex, 16 bayt)
+        <input type="text" class="mono" id="aesIv" spellcheck="false">
+      </label>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn aes" id="aesRandKey">Kalit va IV ni tasodifiy yaratish</button>
+      <span class="small muted" id="aesKeyInfo"></span>
+    </div>
+    <hr class="sep">
+    <h4>PKCS7 bilan to‘ldirilgan baytlar</h4>
+    <p class="small muted" id="aesPadInfo"></p>
+    <div class="bytes" id="aesPadBytes"></div>
+  </div>
+
+  <div class="panel aes">
+    <div class="panel-head"><h3>2. CBC zanjiri</h3><span class="small muted">Blokni bosing — pastda uning ichini ko‘rasiz</span></div>
+    <div class="chain" id="aesChain"></div>
+    <dl class="kv" style="margin-top:8px">
+      <dt>Shifr matn (hex)</dt><dd id="aesCt"></dd>
+      <dt>Deshifrlangan</dt><dd id="aesDec"></dd>
+    </dl>
+  </div>
+
+  <div class="panel aes" id="aesVizPanel">
+    <div class="panel-head"><h3>3. Blok ichida: raundlar animatsiyasi</h3><span class="badge aes" id="aesBlockLbl">1-blok</span></div>
+    <div class="player">
+      <span class="step-label" id="aesStepLbl"></span>
+      <button class="btn ghost sm" id="aesFirst" aria-label="Boshiga">⏮</button>
+      <button class="btn ghost sm" id="aesPrev" aria-label="Oldingi qadam">◀</button>
+      <button class="btn aes sm" id="aesPlay">▶ Ijro</button>
+      <button class="btn ghost sm" id="aesNext" aria-label="Keyingi qadam">▶</button>
+      <button class="btn ghost sm" id="aesLast" aria-label="Oxiriga">⏭</button>
+      <label class="speed">Tezlik <input type="range" id="aesSpeed" min="0.25" max="3" step="0.25" value="1"></label>
+    </div>
+    <div class="scrubber" id="aesScrub" aria-label="Qadamlar"></div>
+    <div class="legend">
+      <span><i class="op-subBytes"></i>SubBytes</span><span><i class="op-shiftRows"></i>ShiftRows</span><span><i class="op-mixColumns"></i>MixColumns</span><span><i class="op-addRoundKey"></i>AddRoundKey</span><span><i class="op-input"></i>Kirish / IV / chiqish</span>
+    </div>
+    <div class="state-wrap" style="margin-top:18px">
+      <div class="state-col"><h4>Oldin</h4><div class="state" id="aesBefore"></div></div>
+      <div class="state-col"><h4>Keyin <span class="xs muted">(katakni bosing)</span></h4><div class="state" id="aesAfter"></div></div>
+      <div class="detail" id="aesDetail"></div>
+    </div>
+  </div>
+
+  <div class="panel aes">
+    <div class="panel-head"><h3>4. Raund kalitlari (Key Expansion)</h3><span class="small muted">Joriy raund kaliti belgilangan</span></div>
+    <p class="small muted">Asosiy kalitdan har raund uchun 16 baytlik kalit hosil qilinadi: oxirgi so‘z aylantiriladi (RotWord), S-box’dan o‘tkaziladi (SubWord), Rcon bilan XOR qilinadi va Nk so‘z oldingi so‘z bilan XOR qilinadi.</p>
+    <div class="table-wrap"><table id="aesRk"></table></div>
+    <details class="full"><summary>Birinchi hosil qilingan so‘z qanday hisoblanadi</summary><div id="aesW0"></div></details>
+  </div>
+
+  <div class="panel aes">
+    <h3>5. Nega ECB xavfli: rasmni shifrlab ko‘ramiz</h3>
+    <p class="small muted">Har bir piksel bitta bayt. ECB rejimida bir xil 16 piksellik bo‘laklar bir xil shifrlanadi — shakl ko‘rinib qoladi. CBC’da esa har blok oldingisiga bog‘liq, natija shovqinga o‘xshaydi.</p>
+    <div class="ecb-demo">
+      <figure><canvas id="ecbOrig" width="128" height="128"></canvas><figcaption>Asl rasm<span>128×128 = 16 384 bayt</span></figcaption></figure>
+      <figure><canvas id="ecbEcb" width="128" height="128"></canvas><figcaption>AES-ECB<span>shakl ko‘rinadi</span></figcaption></figure>
+      <figure><canvas id="ecbCbc" width="128" height="128"></canvas><figcaption>AES-CBC<span>shakl yo‘qoldi</span></figcaption></figure>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn ghost sm" id="ecbRedo">Yangi kalit bilan qayta shifrlash</button></div>
+  </div>
+  <div class="row"><a class="btn rsa" href="#rsa">RSA bo‘limiga o‘tish</a></div>
+</section>
+
+<!-- ===================== 4. RSA ===================== -->
+<section class="page" id="page-rsa" data-page="rsa">
+  <div class="page-head">
+    <span class="kicker" style="color:var(--rsa)"><span class="sw" style="background:var(--rsa)"></span>Ochiq kalitli shifrlash</span>
+    <h2>RSA: ko‘paytirish oson, faktorlash qiyin</h2>
+    <p class="lead">Shifrlash <span class="formula">C = M<sup>e</sup> mod n</span> (ochiq kalit), ochish <span class="formula">M = C<sup>d</sup> mod n</span> (yopiq kalit).</p>
+  </div>
+
+  <div class="panel rsa">
+    <h3>Bilish shart bo‘lgan fikrlar</h3>
+    <ul class="keypoints" style="--accent:var(--rsa)">
+      <li><b>Ikki kalit:</b> ochiq kalit <span class="formula">(e, n)</span> hammaga beriladi, yopiq kalit <span class="formula">(d, n)</span> faqat egasida.</li>
+      <li><b>Xavfsizlik asosi:</b> <span class="formula">n = p·q</span> ni hisoblash oson, lekin n dan p va q ni topish (faktorlash) 2048 bitli (617 xonali) son uchun amalda imkonsiz.</li>
+      <li><b>Kalit yaratish:</b> <span class="formula">φ(n) = (p−1)(q−1)</span>, <span class="formula">gcd(e, φ) = 1</span> (odatda e = 65537), <span class="formula">e·d ≡ 1 (mod φ)</span> — d kengaytirilgan Evklid algoritmi bilan topiladi.</li>
+      <li><b>Imzo — teskari yo‘nalish:</b> yopiq kalit bilan imzolanadi <span class="formula">s = h<sup>d</sup> mod n</span>, ochiq kalit bilan tekshiriladi <span class="formula">s<sup>e</sup> mod n = h</span>.</li>
+      <li><b>Amalda “sof” RSA ishlatilmaydi:</b> shifrlash uchun OAEP, imzo uchun PSS to‘ldirish qo‘llanadi. OAEP tufayli bir xil matn har safar boshqacha shifrlanadi.</li>
+      <li><b>Sekin.</b> Shuning uchun RSA katta faylni emas, faqat AES kalitini yoki xeshni shifrlaydi.</li>
+    </ul>
+  </div>
+
+  <div class="panel rsa">
+    <div class="panel-head"><h3>Kim qaysi kalitni ishlatadi</h3>
+      <span class="seg" id="flowMode"><button data-v="enc" aria-pressed="true">Shifrlash</button><button data-v="sig">Raqamli imzo</button></span></div>
+    <div class="flow">
+      <div class="actor"><div class="av" style="background:var(--aes)">B</div><b>Bobur</b><div class="keys" id="flowLeftKeys"></div></div>
+      <div class="track"><div class="rail"></div><div class="packet" id="flowPacket">salom</div></div>
+      <div class="actor"><div class="av" style="background:var(--rsa)">A</div><b>Aziza</b><div class="keys" id="flowRightKeys"></div></div>
+    </div>
+    <p class="flow-caption" id="flowCaption"></p>
+    <div class="row" style="justify-content:center"><button class="btn rsa" id="flowPlay">▶ Jarayonni ko‘rsatish</button></div>
+  </div>
+
+  <div class="panel rsa">
+    <div class="panel-head"><h3>Mini-RSA: har bir hisobni ko‘ring</h3><span class="small muted">Kichik sonlar bilan — qo‘lda tekshirsa bo‘ladi</span></div>
+    <div class="grid-3" style="grid-template-columns:repeat(4,minmax(0,1fr))" id="rsaInputs">
+      <label class="field">p (tub son)<input type="number" id="rsaP" value="61" min="2"></label>
+      <label class="field">q (tub son)<input type="number" id="rsaQ" value="53" min="2"></label>
+      <label class="field">e (ochiq ko‘rsatkich)<input type="number" id="rsaE" value="17" min="3"></label>
+      <label class="field">Xabar<input type="text" id="rsaMsg" value="Salom" maxlength="12" autocomplete="off"></label>
+    </div>
+    <p class="small" id="rsaErr" style="color:var(--bad);margin-top:8px"></p>
+    <div class="player" style="margin:10px 0 16px">
+      <span class="step-label" id="rsaStepLbl"></span>
+      <button class="btn ghost sm" id="rsaPrev">◀</button>
+      <button class="btn rsa sm" id="rsaPlay">▶ Ijro</button>
+      <button class="btn ghost sm" id="rsaNext">▶</button>
+      <button class="btn ghost sm" id="rsaAll">Hammasini ochish</button>
+    </div>
+    <div class="steps-v" id="rsaSteps"></div>
+  </div>
+
+  <div class="panel rsa">
+    <div class="panel-head"><h3>Mini-imzo: xabar o‘zgarsa nima bo‘ladi</h3></div>
+    <div class="grid-2">
+      <label class="field">Imzolanadigan xabar<input type="text" id="sigMsg" value="100 so‘m o‘tkazilsin" autocomplete="off"></label>
+      <label class="field">Qabul qilingan xabar (o‘zgartirib ko‘ring)<input type="text" id="sigRecv" value="100 so‘m o‘tkazilsin" autocomplete="off"></label>
+    </div>
+    <div class="grid-2" style="margin-top:14px">
+      <div class="detail" style="min-height:0"><h4>Yuboruvchi (yopiq kalit d)</h4><div id="sigSend"></div></div>
+      <div class="detail" style="min-height:0"><h4>Qabul qiluvchi (ochiq kalit e)</h4><div id="sigCheck"></div></div>
+    </div>
+  </div>
+
+  <div class="panel rsa">
+    <div class="panel-head"><h3>Haqiqiy RSA-2048 (brauzerning WebCrypto API’si)</h3><span class="badge" id="rsaRealStatus">kalit yaratilmagan</span></div>
+    <p class="small muted">Amaliy ishdagi Python kodi bilan bir xil: e = 65537, shifrlash OAEP (SHA-256), imzo PSS (SHA-256).</p>
+    <div class="row">
+      <label class="field" style="flex:1;min-width:220px">Xabar<input type="text" id="rsaRealMsg" value="Public-key encryption example" autocomplete="off"></label>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn rsa" id="rsaGen">Kalit juftligini yaratish</button>
+      <button class="btn ghost" id="rsaEnc" disabled>Shifrlash va ochish</button>
+      <button class="btn ghost" id="rsaSign" disabled>Imzolash va tekshirish</button>
+    </div>
+    <div class="console" id="rsaConsole" style="margin-top:14px">Kalit juftligini yarating.</div>
+    <p class="small muted" style="margin-top:10px">“Shifrlash” tugmasini ikki marta bosing: bir xil matn har safar boshqa shifr matn beradi — bu OAEP to‘ldirishidagi tasodifiylik.</p>
+  </div>
+  <div class="row"><a class="btn sha" href="#sha">SHA-256 bo‘limiga o‘tish</a></div>
+</section>
+
+<!-- ===================== 5. SHA ===================== -->
+<section class="page" id="page-sha" data-page="sha">
+  <div class="page-head">
+    <span class="kicker" style="color:var(--sha)"><span class="sw" style="background:var(--sha)"></span>Kriptografik xesh funksiya</span>
+    <h2>SHA-256: istalgan matndan 256 bitlik barmoq izi</h2>
+    <p class="lead"><span class="formula">H: {0,1}* → {0,1}<sup>256</sup></span>. Kalit yo‘q, natijadan asl matnni qaytarib bo‘lmaydi.</p>
+  </div>
+
+  <div class="panel sha">
+    <h3>Bilish shart bo‘lgan fikrlar</h3>
+    <ul class="keypoints" style="--accent:var(--sha)">
+      <li><b>Bir tomonlamalik:</b> H(M) ma’lum bo‘lsa ham, M ni topish amalda imkonsiz.</li>
+      <li><b>Kolliziyaga chidamlilik:</b> H(M1) = H(M2) bo‘ladigan ikki xil M1 ≠ M2 ni topish amalda imkonsiz.</li>
+      <li><b>Lavina effekti:</b> kirishdagi 1 bit o‘zgarsa, chiqishdagi bitlarning taxminan yarmi (≈128 tasi) o‘zgaradi.</li>
+      <li><b>Ishlash tartibi:</b> to‘ldirish <span class="formula">L + 1 + k ≡ 448 (mod 512)</span> va 64 bitli uzunlik → 512 bitli bloklar → 64 so‘zli jadval W → a…h registrlari ustida 64 raund.</li>
+      <li><b>Parol uchun yolg‘iz SHA-256 yetmaydi:</b> u juda tez, shuning uchun brute-force ham tez. Tuz (salt) va sekin funksiya — PBKDF2, bcrypt, Argon2 kerak.</li>
+      <li><b>MD5 va SHA-1 buzilgan</b> — ulardan xavfsizlik uchun foydalanmang.</li>
+    </ul>
+  </div>
+
+  <div class="panel sha">
+    <div class="panel-head"><h3>1. Matn va to‘ldirish (padding)</h3><span class="badge ok hidden" id="shaVerify">WebCrypto natijasi bilan mos</span></div>
+    <label class="field">Matn<input type="text" id="shaText" value="cybersecurity" autocomplete="off" spellcheck="false"></label>
+    <div class="bytes" id="shaBytes" style="margin-top:12px"></div>
+    <p class="small" id="shaPadInfo" style="margin-top:12px"></p>
+    <div class="legend" style="margin-bottom:8px"><span><i style="background:var(--sha)"></i>Xabar biti 1</span><span><i style="background:var(--sha-soft);border:1px solid var(--sha)"></i>Xabar biti 0</span><span><i style="background:var(--hot)"></i>Qo‘shilgan “1”</span><span><i style="background:var(--surface-2);border:1px solid var(--line)"></i>k ta nol</span><span><i style="background:var(--rsa)"></i>64 bitli uzunlik L</span></div>
+    <div class="row" id="shaBlockSel" style="margin-bottom:8px"></div>
+    <div class="padgrid" id="shaPadGrid"></div>
+  </div>
+
+  <div class="panel sha">
+    <div class="panel-head"><h3>2. Xabar jadvali W[0…63]</h3><span class="small muted">W[16] dan boshlab istalgan so‘zni bosing</span></div>
+    <div class="wgrid" id="shaW"></div>
+    <div class="detail" id="shaWDetail" style="margin-top:12px;min-height:0"></div>
+  </div>
+
+  <div class="panel sha">
+    <div class="panel-head"><h3>3. Siqish: 64 raund</h3><span class="badge sha" id="shaRoundLbl">0-raund</span></div>
+    <div class="player">
+      <span class="step-label" id="shaStepLbl"></span>
+      <button class="btn ghost sm" id="shaFirst">⏮</button>
+      <button class="btn ghost sm" id="shaPrev">◀</button>
+      <button class="btn sha sm" id="shaPlay">▶ Ijro</button>
+      <button class="btn ghost sm" id="shaNext">▶</button>
+      <button class="btn ghost sm" id="shaLast">⏭</button>
+      <label class="speed">Tezlik <input type="range" id="shaSpeed" min="0.25" max="4" step="0.25" value="1"></label>
+    </div>
+    <input type="range" id="shaScrub" min="0" max="64" value="0" style="margin:12px 0" aria-label="Raund">
+    <div class="grid-2">
+      <div><h4>Registrlar</h4><div class="regs" id="shaRegs"></div></div>
+      <div class="detail" id="shaRoundDetail"></div>
+    </div>
+  </div>
+
+  <div class="panel sha">
+    <h3>4. Yakuniy xesh</h3>
+    <p class="small muted">Har blok oxirida registrlar boshlang‘ich qiymatlarga (mod 2<sup>32</sup>) qo‘shiladi.</p>
+    <div class="table-wrap"><table id="shaFinal"></table></div>
+    <div class="hexline" id="shaDigest" style="margin-top:12px"></div>
+  </div>
+
+  <div class="panel sha">
+    <div class="panel-head"><h3>5. Lavina effekti</h3></div>
+    <div class="grid-2">
+      <label class="field">Matn 1<input type="text" id="avA" value="cybersecurity" autocomplete="off" spellcheck="false"></label>
+      <label class="field">Matn 2<input type="text" id="avB" value="Cybersecurity" autocomplete="off" spellcheck="false"></label>
+    </div>
+    <p class="small" id="avInDiff" style="margin-top:10px"></p>
+    <dl class="kv" style="margin:12px 0">
+      <dt>SHA-256(M1)</dt><dd id="avH1"></dd>
+      <dt>SHA-256(M2)</dt><dd id="avH2"></dd>
+    </dl>
+    <div class="grid-2" style="align-items:center">
+      <div><div class="bitgrid" id="avGrid"></div><p class="xs muted" style="margin-top:6px">256 bit: rangli katak — farq qilgan bit</p></div>
+      <div><div class="bigstat" id="avCount">0 <small>/ 256</small></div><p class="muted" id="avPct"></p></div>
+    </div>
+    <hr class="sep">
+    <h4>Tajriba: 1 bitni 500 marta tasodifiy o‘zgartirsak</h4>
+    <p class="small muted">Har safar Matn 1 dagi bitta tasodifiy bit almashtiriladi va xeshdagi farq soni hisoblanadi. Natijalar 128 atrofida to‘planadi.</p>
+    <div class="row"><button class="btn sha sm" id="avRun">Tajribani boshlash</button><span class="small" id="avRunInfo"></span></div>
+    <div class="hist" id="avHist" style="margin-top:12px"></div>
+    <div class="hist-axis"><span>96</span><span>112</span><span>128</span><span>144</span><span>160</span></div>
+  </div>
+
+  <div class="panel sha">
+    <div class="panel-head"><h3>6. Bir tomonlamalik: xeshdan so‘zni topib ko‘ring</h3></div>
+    <p class="small muted">Xeshni “ochib” bo‘lmaydi — faqat barcha variantlarni sinab ko‘rish mumkin. 4 harfli kichik lotin so‘zi uchun 26⁴ = 456 976 variant bor.</p>
+    <div class="grid-2">
+      <label class="field">Yashirin so‘z (4 ta kichik harf)<input type="text" id="bfWord" value="kalt" maxlength="4" autocomplete="off"></label>
+      <div><div class="small muted">Uning xeshi:</div><div class="hexline" id="bfHash" style="font-size:.78rem"></div></div>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn sha" id="bfRun">Brute-force boshlash</button><span class="small" id="bfInfo"></span></div>
+    <div class="callout info" id="bfNote" style="display:none"></div>
+  </div>
+  <div class="row"><a class="btn" href="#hybrid">Gibrid tizimga o‘tish</a></div>
+</section>
+
+<!-- ===================== 6. GIBRID ===================== -->
+<section class="page" id="page-hybrid" data-page="hybrid">
+  <div class="page-head">
+    <h2>Gibrid tizim: uchalasi birgalikda</h2>
+    <p class="lead">Amalda hech biri yolg‘iz ishlamaydi. AES tez, lekin kalitni yetkazish muammo; RSA kalitni yetkazadi, lekin sekin; SHA-256 ma’lumot o‘zgarmaganini kafolatlaydi.</p>
+  </div>
+  <div class="panel">
+    <ul class="keypoints">
+      <li>Katta ma’lumot <b>AES</b> bilan shifrlanadi — tasodifiy, bir martalik kalit bilan.</li>
+      <li>Shu AES kaliti qabul qiluvchining <b>RSA ochiq kaliti</b> bilan shifrlanib yuboriladi (“kalitni o‘rash”).</li>
+      <li>Xabarning <b>SHA-256</b> xeshi yuboruvchining yopiq kaliti bilan imzolanadi — kim yuborgani va o‘zgarmagani tasdiqlanadi.</li>
+      <li><b>HTTPS (TLS 1.3)</b> shu g‘oyada ishlaydi: kalit ECDHE orqali kelishiladi, ma’lumot AES-GCM bilan shifrlanadi, server sertifikati RSA yoki ECDSA imzosi bilan tekshiriladi, SHA-256/384 hamma joyda.</li>
+    </ul>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>Haqiqiy kalitlar bilan qadamma-qadam</h3><span class="small muted">Bobur → Aziza</span></div>
+    <label class="field">Bobur yuboradigan xabar<input type="text" id="hyMsg" value="Ertaga soat 9:00 da uchrashamiz" autocomplete="off"></label>
+    <div class="row" style="margin:14px 0"><button class="btn" id="hyNext">Keyingi qadam</button><button class="btn ghost" id="hyReset">Qaytadan</button><span class="small muted" id="hyInfo"></span></div>
+    <div class="hgrid" id="hyGrid"></div>
+  </div>
+  <div class="row"><a class="btn" href="#lab">Amaliy topshiriqqa o‘tish</a></div>
+</section>
+
+<!-- ===================== 7. AMALIY ===================== -->
+<section class="page" id="page-lab" data-page="lab">
+  <div class="page-head">
+    <h2>Amaliy topshiriq</h2>
+    <p class="lead">Variantingizni tanlang. Har topshiriqda avval qo‘lda hisoblaysiz, “Tekshirish”ni bosasiz, so‘ng yechimni aynan sizning qiymatlaringiz bilan animatsiyada ko‘rasiz.</p>
+  </div>
+  <div class="panel">
+    <div class="grid-2">
+      <label class="field">F.I.Sh.<input type="text" id="stName" placeholder="Masalan: Aliyev Vali" autocomplete="name"></label>
+      <label class="field">Guruh<input type="text" id="stGroup" placeholder="Masalan: 715-23" autocomplete="off"></label>
+    </div>
+    <h4 style="margin-top:18px">Variant</h4>
+    <div class="variant-pick" id="variantPick"></div>
+  </div>
+  <div id="labTasks"></div>
+</section>
+
+<!-- ===================== 8. TEST ===================== -->
+<section class="page" id="page-quiz" data-page="quiz">
+  <div class="page-head">
+    <h2>Nazorat savollari</h2>
+    <p class="lead">Amaliy ishdagi 5 ta savol: har biriga ikkita test va to‘liq javob. Javob tanlangach izoh chiqadi.</p>
+  </div>
+  <div class="panel"><div class="row between"><b id="quizScore">0 / 10</b><button class="btn ghost sm" id="quizReset">Testni qayta boshlash</button></div></div>
+  <div class="panel" id="quizBox"></div>
+</section>
+
+<!-- ===================== 9. HISOBOT ===================== -->
+<section class="page" id="page-report" data-page="report">
+  <div class="page-head">
+    <h2>Hisobot</h2>
+    <p class="lead">Bajarilgan topshiriqlar natijasi amaliy ish formatida yig‘iladi. Uni yuklab oling yoki chop eting.</p>
+  </div>
+  <div class="panel no-print">
+    <div class="row"><button class="btn" id="repDownload">.txt yuklab olish</button><button class="btn ghost" id="repPrint">Chop etish / PDF</button><button class="btn ghost" id="repCopy">Nusxa olish</button></div>
+  </div>
+  <div class="report" id="reportBox"></div>
+</section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/core.js"></script>
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/home.js"></script>
+<script src="js/aes-viz.js"></script>
+<script src="js/rsa-viz.js"></script>
+<script src="js/sha-viz.js"></script>
+<script src="js/hybrid.js"></script>
+<script src="js/lab.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
